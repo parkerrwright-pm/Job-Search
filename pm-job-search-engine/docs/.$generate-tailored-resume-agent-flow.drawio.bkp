@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-03-24T00:00:00.000Z" type="device">
+  <diagram id="resume-agent-flow" name="Generate Tailored Resume — Sub-Agent Flow">
+    <mxGraphModel dx="2200" dy="1600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- TITLE                                                           -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <mxCell id="title" value="&lt;b&gt;Generate Tailored Resume — AI Agent Sub-Agent Decomposition&lt;/b&gt;" style="text;html=1;fontSize=22;fontFamily=Inter;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#1e3a5f;" vertex="1" parent="1">
+          <mxGeometry x="300" y="-30" width="800" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- USER / START                                                    -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <mxCell id="user" value="&lt;b&gt;User&lt;/b&gt;&lt;br&gt;(Frontend)" style="shape=ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontFamily=Inter;" vertex="1" parent="1">
+          <mxGeometry x="620" y="40" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- ORCHESTRATOR AGENT (big swim-lane container)                    -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <mxCell id="orchestrator" value="&lt;b&gt;PRIMARY ORCHESTRATOR AGENT&lt;/b&gt;&lt;br&gt;Coordinates all sub-agents, manages state &amp; DB persistence" style="swimlane;startSize=40;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#1e3a5f;strokeWidth=2;fontSize=13;fontFamily=Inter;fontColor=#1e3a5f;rounded=1;arcSize=6;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="170" width="1270" height="1700" as="geometry" />
+        </mxCell>
+
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- SUB-AGENT 1: Input Resolution Agent                  -->
+        <!-- ──────────────────────────────────────────────────── -->
+        <mxCell id="sa1_box" value="" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#e6f2ff;strokeColor=#4a86c8;strokeWidth=1.5;rounded=1;arcSize=8;fontSize=11;fontFamily=Inter;fontStyle=1;fontColor=#1e3a5f;" vertex="1" parent="orchestrator">
+          <mxGeometry x="30" y="60" width="500" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="sa1_label" value="&lt;b&gt;① Input Resolution Agent&lt;/b&gt;" style="text;html=1;fontSize=14;fontFamily=Inter;fontColor=#1e3a5f;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa1_box">
+          <mxGeometry x="10" y="5" width="300" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="sa1_fetch_job" value="Fetch Job Record&lt;br&gt;&lt;i&gt;(title, company, JD text, URL)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a86c8;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa1_box">
+          <mxGeometry x="20" y="40" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sa1_fetch_resume" value="Fetch Primary Resume&lt;br&gt;&lt;i&gt;(by selectedPrimaryResumeId&lt;br&gt;or most recent isPrimary)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a86c8;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa1_box">
+          <mxGeometry x="20" y="115" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="sa1_fetch_template" value="Fetch Template Resume&lt;br&gt;&lt;i&gt;(optional, by templateId)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a86c8;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa1_box">
+          <mxGeometry x="270" y="40" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sa1_parse_files" value="Parse PDF / DOCX → Text&lt;br&gt;&lt;i&gt;(pdf-parse, mammoth)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a86c8;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa1_box">
+          <mxGeometry x="270" y="125" width="200" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- SUB-AGENT 2: Parsing Agent                           -->
+        <!-- ──────────────────────────────────────────────────── -->
+        <mxCell id="sa2_box" value="" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#4caf50;strokeWidth=1.5;rounded=1;arcSize=8;fontSize=11;fontFamily=Inter;fontStyle=1;fontColor=#2e7d32;" vertex="1" parent="orchestrator">
+          <mxGeometry x="590" y="60" width="400" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="sa2_label" value="&lt;b&gt;② Parsing &amp; Extraction Agent&lt;/b&gt;" style="text;html=1;fontSize=14;fontFamily=Inter;fontColor=#2e7d32;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa2_box">
+          <mxGeometry x="10" y="5" width="300" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="sa2_parse_resume" value="parseResumeStructureEnhanced()&lt;br&gt;&lt;i&gt;→ name, contact, summary,&lt;br&gt;skills[], workEntries[{title,&lt;br&gt;company, dates, bullets}],&lt;br&gt;education, certifications&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4caf50;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa2_box">
+          <mxGeometry x="15" y="40" width="180" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="sa2_parse_jd" value="parseJobDescriptionStructure()&lt;br&gt;&lt;i&gt;→ requiredSkills[],&lt;br&gt;preferredSkills[],&lt;br&gt;seniorityLevel, experienceYears,&lt;br&gt;domainKeywords[]&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4caf50;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa2_box">
+          <mxGeometry x="210" y="40" width="175" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="sa2_context" value="buildParsedContextBlock()&lt;br&gt;&lt;i&gt;→ structured context string&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4caf50;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa2_box">
+          <mxGeometry x="100" y="150" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- SUB-AGENT 3: ATS Detection Agent                     -->
+        <!-- ──────────────────────────────────────────────────── -->
+        <mxCell id="sa3_box" value="" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#f57c00;strokeWidth=1.5;rounded=1;arcSize=8;fontSize=11;fontFamily=Inter;fontStyle=1;fontColor=#e65100;" vertex="1" parent="orchestrator">
+          <mxGeometry x="30" y="300" width="500" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="sa3_label" value="&lt;b&gt;③ ATS Detection Agent&lt;/b&gt;" style="text;html=1;fontSize=14;fontFamily=Inter;fontColor=#e65100;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa3_box">
+          <mxGeometry x="10" y="5" width="250" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="sa3_url_detect" value="detectAtsFromUrl()&lt;br&gt;&lt;i&gt;URL pattern matching&lt;br&gt;(14 ATS providers)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#f57c00;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa3_box">
+          <mxGeometry x="20" y="40" width="175" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sa3_ai_detect" value="AI ATS Detection&lt;br&gt;&lt;i&gt;(fallback if URL unknown)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#f57c00;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa3_box">
+          <mxGeometry x="20" y="110" width="175" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sa3_rules" value="getAtsScoreThreshold()&lt;br&gt;&lt;i&gt;Per-ATS minimum scores&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#f57c00;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa3_box">
+          <mxGeometry x="260" y="40" width="210" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sa3_addendum" value="getAtsPromptAddendum()&lt;br&gt;&lt;i&gt;System-specific ATS rules&lt;br&gt;(formatting, keyword density)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#f57c00;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa3_box">
+          <mxGeometry x="260" y="105" width="210" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- SUB-AGENT 4: 18-Section AI Analysis Coordinator      -->
+        <!-- ──────────────────────────────────────────────────── -->
+        <mxCell id="sa4_box" value="" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#ede7f6;strokeColor=#7e57c2;strokeWidth=1.5;rounded=1;arcSize=8;fontSize=11;fontFamily=Inter;fontStyle=1;fontColor=#4527a0;" vertex="1" parent="orchestrator">
+          <mxGeometry x="30" y="520" width="1210" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_label" value="&lt;b&gt;④ AI Analysis Coordinator Agent&lt;/b&gt;  —  18 parallel AI tasks in batches of 8" style="text;html=1;fontSize=14;fontFamily=Inter;fontColor=#4527a0;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa4_box">
+          <mxGeometry x="10" y="5" width="600" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- Batch 1 row -->
+        <mxCell id="sa4_b1_label" value="&lt;b&gt;Batch 1&lt;/b&gt; (8 tasks)" style="text;html=1;fontSize=10;fontFamily=Inter;fontColor=#7e57c2;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa4_box">
+          <mxGeometry x="10" y="32" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_ats" value="ATS Score&lt;br&gt;Analysis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="10" y="55" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_ats_detect" value="ATS System&lt;br&gt;Detection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="120" y="55" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_keywords" value="Keyword&lt;br&gt;Targets" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="230" y="55" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_missing" value="Missing&lt;br&gt;Keywords" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="340" y="55" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_bullets" value="Bullet&lt;br&gt;Rewrites" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="450" y="55" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_mirror" value="Mirrored&lt;br&gt;Bullets" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="560" y="55" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_summary" value="Summary&lt;br&gt;Options" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="670" y="55" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_skills" value="Skills&lt;br&gt;Optimization" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="780" y="55" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Batch 2 row -->
+        <mxCell id="sa4_b2_label" value="&lt;b&gt;Batch 2&lt;/b&gt; (8 tasks)" style="text;html=1;fontSize=10;fontFamily=Inter;fontColor=#7e57c2;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa4_box">
+          <mxGeometry x="10" y="102" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_company_pos" value="Company&lt;br&gt;Positioning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="10" y="125" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_company_strat" value="Company&lt;br&gt;Strategy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="120" y="125" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_strat_pos" value="Strategy&lt;br&gt;Positioning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="230" y="125" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_linkedin" value="LinkedIn&lt;br&gt;Optimization" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="340" y="125" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_recruiter" value="Recruiter&lt;br&gt;Keywords" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="450" y="125" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_network" value="Networking&lt;br&gt;Messages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="560" y="125" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_talking" value="Interview&lt;br&gt;Talking Pts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="670" y="125" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_questions" value="Interview&lt;br&gt;Questions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="780" y="125" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Batch 3 row -->
+        <mxCell id="sa4_b3_label" value="&lt;b&gt;Batch 3&lt;/b&gt; (2 tasks)" style="text;html=1;fontSize=10;fontFamily=Inter;fontColor=#7e57c2;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa4_box">
+          <mxGeometry x="10" y="172" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_hiring" value="Hiring Manager&lt;br&gt;Psychology" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="10" y="195" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sa4_match" value="Job Match&lt;br&gt;Summary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7e57c2;fontSize=9;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="120" y="195" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Output summary -->
+        <mxCell id="sa4_output" value="&lt;b&gt;OUTPUT:&lt;/b&gt; 18-section analysis object (~50-100KB JSON)&lt;br&gt;&lt;i&gt;ATS scores, bullet rewrites, missing keywords, skills, summary options,&lt;br&gt;company strategy, interview prep, job match summary&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ede7f6;strokeColor=#7e57c2;strokeWidth=1.5;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa4_box">
+          <mxGeometry x="340" y="185" width="520" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- SUB-AGENT 5: Quality Gate Evaluator                  -->
+        <!-- ──────────────────────────────────────────────────── -->
+        <mxCell id="sa5_box" value="" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#e53935;strokeWidth=1.5;rounded=1;arcSize=8;fontSize=11;fontFamily=Inter;fontStyle=1;fontColor=#b71c1c;" vertex="1" parent="orchestrator">
+          <mxGeometry x="30" y="840" width="1210" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_label" value="&lt;b&gt;⑤ Quality Gate Evaluator Agent&lt;/b&gt;  —  Iterates up to 3 times until scores pass" style="text;html=1;fontSize=14;fontFamily=Inter;fontColor=#b71c1c;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa5_box">
+          <mxGeometry x="10" y="5" width="600" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_extract" value="Extract Scores&lt;br&gt;&lt;i&gt;atsScore, aiReviewerScore&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#e53935;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa5_box">
+          <mxGeometry x="20" y="40" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_check" value="&lt;b&gt;Gate Check&lt;/b&gt;&lt;br&gt;&lt;i&gt;atsScore ≥ minAts&lt;br&gt;AND&lt;br&gt;aiReviewer ≥ minReviewer&lt;/i&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#e53935;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa5_box">
+          <mxGeometry x="240" y="30" width="180" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_pass" value="✅ PASS&lt;br&gt;&lt;i&gt;Use best analysis&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#4caf50;fontSize=11;fontFamily=Inter;fontStyle=1;" vertex="1" parent="sa5_box">
+          <mxGeometry x="480" y="35" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_refine" value="🔄 REFINE&lt;br&gt;&lt;i&gt;buildRefinementContext()&lt;br&gt;+ ATS rules addendum&lt;br&gt;→ Re-run Analysis Agent&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#f9a825;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa5_box">
+          <mxGeometry x="480" y="105" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_track" value="Track Best Score&lt;br&gt;&lt;i&gt;scoreHistory[],&lt;br&gt;bestAnalysis,&lt;br&gt;baselineAtsScore&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#e53935;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa5_box">
+          <mxGeometry x="20" y="115" width="170" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_persist" value="Persist to DB&lt;br&gt;&lt;i&gt;jobAnalysis.upsert()&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#e53935;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa5_box">
+          <mxGeometry x="730" y="35" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_workflow_meta" value="&lt;b&gt;Workflow Metadata&lt;/b&gt;&lt;br&gt;&lt;i&gt;iterationsRun, passed, baselineAtsScore,&lt;br&gt;bestIterationAtsScore, scoreHistory[]&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#e53935;strokeWidth=1.5;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa5_box">
+          <mxGeometry x="930" y="35" width="250" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Gate arrows -->
+        <mxCell id="sa5_e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#e53935;fontSize=10;fontFamily=Inter;" edge="1" parent="sa5_box" source="sa5_extract" target="sa5_check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_e2" value="PASS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#4caf50;fontSize=10;fontFamily=Inter;fontStyle=1;" edge="1" parent="sa5_box" source="sa5_check" target="sa5_pass">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_e3" value="FAIL (iter &lt; max)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#f9a825;fontSize=10;fontFamily=Inter;fontStyle=1;" edge="1" parent="sa5_box" source="sa5_check" target="sa5_refine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_e4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#4caf50;fontSize=10;fontFamily=Inter;" edge="1" parent="sa5_box" source="sa5_pass" target="sa5_persist">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa5_e5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#4caf50;fontSize=10;fontFamily=Inter;" edge="1" parent="sa5_box" source="sa5_persist" target="sa5_workflow_meta">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- SUB-AGENT 6: Export Synthesis Agent                   -->
+        <!-- ──────────────────────────────────────────────────── -->
+        <mxCell id="sa6_box" value="" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#e0f7fa;strokeColor=#00838f;strokeWidth=1.5;rounded=1;arcSize=8;fontSize=11;fontFamily=Inter;fontStyle=1;fontColor=#006064;" vertex="1" parent="orchestrator">
+          <mxGeometry x="30" y="1100" width="1210" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="sa6_label" value="&lt;b&gt;⑥ Export Synthesis Agent&lt;/b&gt;  —  Combines analysis + resume + JD into export-ready JSON" style="text;html=1;fontSize=14;fontFamily=Inter;fontColor=#006064;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa6_box">
+          <mxGeometry x="10" y="5" width="650" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="sa6_extract" value="Extract Synthesis Sections&lt;br&gt;&lt;i&gt;ATS scores, bullet rewrites,&lt;br&gt;missing keywords, skills,&lt;br&gt;summary options, match summary&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#00838f;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa6_box">
+          <mxGeometry x="20" y="40" width="200" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="sa6_company" value="Build Company&lt;br&gt;Research Context&lt;br&gt;&lt;i&gt;companyStrategy +&lt;br&gt;strategyPositioning&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#00838f;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa6_box">
+          <mxGeometry x="20" y="130" width="200" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="sa6_prompt" value="&lt;b&gt;RESUME_EXPORT_SYNTHESIS&lt;/b&gt;&lt;br&gt;&lt;i&gt;AI Prompt (claude-opus-4)&lt;br&gt;resume + JD + analysis + ATS rules&lt;br&gt;+ company research + keywords&lt;br&gt;+ baselineAtsScore floor&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2ebf2;strokeColor=#00838f;strokeWidth=2;fontSize=11;fontFamily=Inter;" vertex="1" parent="sa6_box">
+          <mxGeometry x="280" y="50" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="sa6_output" value="&lt;b&gt;TailoredResumeOutput&lt;/b&gt;&lt;br&gt;&lt;i&gt;headline, summary, skills[],&lt;br&gt;experience[{title, company,&lt;br&gt;dates, scope, bullets[]}],&lt;br&gt;education[], certifications[],&lt;br&gt;keywordsAdded[],&lt;br&gt;atsRecommendations[]&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0f7fa;strokeColor=#00838f;strokeWidth=2;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa6_box">
+          <mxGeometry x="620" y="35" width="250" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="sa6_keywords_badge" value="User Selected&lt;br&gt;Keywords&lt;br&gt;&lt;i&gt;(optional)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#f9a825;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa6_box">
+          <mxGeometry x="280" y="160" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sa6_ats_addendum" value="ATS System-Specific&lt;br&gt;Prompt Addendum&lt;br&gt;&lt;i&gt;(Greenhouse, Workday, etc.)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#f57c00;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa6_box">
+          <mxGeometry x="420" y="160" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Synthesis arrows -->
+        <mxCell id="sa6_e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#00838f;fontSize=10;" edge="1" parent="sa6_box" source="sa6_extract" target="sa6_prompt">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa6_e2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#00838f;fontSize=10;" edge="1" parent="sa6_box" source="sa6_prompt" target="sa6_output">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- SUB-AGENT 7: File Generation Agent                    -->
+        <!-- ──────────────────────────────────────────────────── -->
+        <mxCell id="sa7_box" value="" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#8e24aa;strokeWidth=1.5;rounded=1;arcSize=8;fontSize=11;fontFamily=Inter;fontStyle=1;fontColor=#6a1b9a;" vertex="1" parent="orchestrator">
+          <mxGeometry x="30" y="1360" width="1210" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_label" value="&lt;b&gt;⑦ File Generation Agent&lt;/b&gt;  —  Renders final export files" style="text;html=1;fontSize=14;fontFamily=Inter;fontColor=#6a1b9a;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="sa7_box">
+          <mxGeometry x="10" y="5" width="500" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sa7_template_check" value="Template has&lt;br&gt;{{placeholders}}?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8e24aa;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa7_box">
+          <mxGeometry x="20" y="40" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_merge" value="renderWithDocxTemplate()&lt;br&gt;&lt;i&gt;Merge into user template&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8e24aa;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa7_box">
+          <mxGeometry x="210" y="35" width="190" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_generate_docx" value="buildCompleteResumeDocx()&lt;br&gt;&lt;i&gt;ATS-friendly DOCX from scratch&lt;br&gt;(docx library)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8e24aa;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa7_box">
+          <mxGeometry x="210" y="95" width="190" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_pdf" value="buildPdfBuffer()&lt;br&gt;&lt;i&gt;LETTER-size PDF&lt;br&gt;(PDFDocument, 2-page max)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8e24aa;fontSize=10;fontFamily=Inter;" vertex="1" parent="sa7_box">
+          <mxGeometry x="460" y="55" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_docx_out" value="📄 &lt;b&gt;DOCX Buffer&lt;/b&gt;&lt;br&gt;&lt;i&gt;~100-300 KB&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#8e24aa;strokeWidth=2;fontSize=11;fontFamily=Inter;fontStyle=1;" vertex="1" parent="sa7_box">
+          <mxGeometry x="720" y="40" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_pdf_out" value="📄 &lt;b&gt;PDF Buffer&lt;/b&gt;&lt;br&gt;&lt;i&gt;~50-150 KB&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#8e24aa;strokeWidth=2;fontSize=11;fontFamily=Inter;fontStyle=1;" vertex="1" parent="sa7_box">
+          <mxGeometry x="720" y="100" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- File gen arrows -->
+        <mxCell id="sa7_e1" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#8e24aa;fontSize=9;fontFamily=Inter;" edge="1" parent="sa7_box" source="sa7_template_check" target="sa7_merge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_e2" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#8e24aa;fontSize=9;fontFamily=Inter;" edge="1" parent="sa7_box" source="sa7_template_check" target="sa7_generate_docx">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_e3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#8e24aa;fontSize=10;" edge="1" parent="sa7_box" source="sa7_merge" target="sa7_docx_out">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_e4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#8e24aa;fontSize=10;" edge="1" parent="sa7_box" source="sa7_generate_docx" target="sa7_docx_out">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa7_e5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#8e24aa;fontSize=10;" edge="1" parent="sa7_box" source="sa7_pdf" target="sa7_pdf_out">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- DB STORES (inside orchestrator at bottom)            -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <mxCell id="db_box" value="" style="swimlane;startSize=25;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#9e9e9e;strokeWidth=1;rounded=1;arcSize=6;fontSize=11;fontFamily=Inter;fontStyle=1;fontColor=#616161;" vertex="1" parent="orchestrator">
+          <mxGeometry x="590" y="300" width="400" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="db_label" value="&lt;b&gt;PostgreSQL (Prisma)&lt;/b&gt;" style="text;html=1;fontSize=12;fontFamily=Inter;fontColor=#616161;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="db_box">
+          <mxGeometry x="10" y="2" width="200" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="db_job" value="Job&lt;br&gt;&lt;i&gt;title, company, JD,&lt;br&gt;customFields,&lt;br&gt;selectedKeywords&lt;/i&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#9e9e9e;fontSize=9;fontFamily=Inter;size=10;" vertex="1" parent="db_box">
+          <mxGeometry x="15" y="30" width="110" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="db_resume" value="Resume&lt;br&gt;&lt;i&gt;isPrimary, fileUrl,&lt;br&gt;parsedContent&lt;/i&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#9e9e9e;fontSize=9;fontFamily=Inter;size=10;" vertex="1" parent="db_box">
+          <mxGeometry x="145" y="30" width="110" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="db_analysis" value="AIAnalysis&lt;br&gt;&lt;i&gt;type, output,&lt;br&gt;metrics, expiresAt&lt;/i&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#9e9e9e;fontSize=9;fontFamily=Inter;size=10;" vertex="1" parent="db_box">
+          <mxGeometry x="275" y="30" width="110" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="db_job_analysis" value="JobAnalysis&lt;br&gt;&lt;i&gt;analysisData (JSON),&lt;br&gt;18 sections + workflow&lt;/i&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#9e9e9e;fontSize=9;fontFamily=Inter;size=10;" vertex="1" parent="db_box">
+          <mxGeometry x="80" y="110" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="db_output_cache" value="RESUME_OUTPUT&lt;br&gt;&lt;i&gt;cachedOutput (JSON)&lt;/i&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#9e9e9e;fontSize=9;fontFamily=Inter;size=10;" vertex="1" parent="db_box">
+          <mxGeometry x="230" y="110" width="135" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- INTER-AGENT FLOW ARROWS (inside orchestrator)        -->
+        <!-- ════════════════════════════════════════════════════ -->
+
+        <!-- User → SA1 -->
+        <!-- SA1 → SA2 -->
+        <mxCell id="flow_1_2" value="resumeText, jdText, templateText" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1e3a5f;strokeWidth=2;fontSize=10;fontFamily=Inter;fontColor=#1e3a5f;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="orchestrator" source="sa1_box" target="sa2_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- SA1 → SA3 -->
+        <mxCell id="flow_1_3" value="jobUrl" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1e3a5f;strokeWidth=2;fontSize=10;fontFamily=Inter;fontColor=#1e3a5f;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="orchestrator" source="sa1_box" target="sa3_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- SA2 → SA4 -->
+        <mxCell id="flow_2_4" value="ParsedResume + ParsedJD + contextBlock" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1e3a5f;strokeWidth=2;fontSize=10;fontFamily=Inter;fontColor=#1e3a5f;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="orchestrator" source="sa2_box" target="sa4_box">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="790" y="500" />
+              <mxPoint x="938" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- SA3 → SA4 -->
+        <mxCell id="flow_3_4" value="detectedATS, thresholds, ATS rules" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1e3a5f;strokeWidth=2;fontSize=10;fontFamily=Inter;fontColor=#1e3a5f;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="orchestrator" source="sa3_box" target="sa4_box">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="280" y="500" />
+              <mxPoint x="333" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- SA4 → SA5 -->
+        <mxCell id="flow_4_5" value="18-section analysis object (~50-100KB)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1e3a5f;strokeWidth=2;fontSize=10;fontFamily=Inter;fontColor=#1e3a5f;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="orchestrator" source="sa4_box" target="sa5_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- SA5 refine loop back to SA4 -->
+        <mxCell id="flow_5_4_loop" value="refinementContext + ATS rules → re-run" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#f9a825;strokeWidth=2;dashed=1;dashPattern=8 4;fontSize=10;fontFamily=Inter;fontColor=#f9a825;" edge="1" parent="orchestrator" source="sa5_refine" target="sa4_box">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1250" y="1005" />
+              <mxPoint x="1250" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- SA5 → SA6 -->
+        <mxCell id="flow_5_6" value="bestAnalysis + workflow metadata" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1e3a5f;strokeWidth=2;fontSize=10;fontFamily=Inter;fontColor=#1e3a5f;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="orchestrator" source="sa5_box" target="sa6_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- SA6 → SA7 -->
+        <mxCell id="flow_6_7" value="TailoredResumeOutput (headline, summary, skills, experience, education, certs)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1e3a5f;strokeWidth=2;fontSize=10;fontFamily=Inter;fontColor=#1e3a5f;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="orchestrator" source="sa6_box" target="sa7_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- ARROWS FROM/TO USER (outside orchestrator)           -->
+        <!-- ════════════════════════════════════════════════════ -->
+
+        <!-- User → Orchestrator -->
+        <mxCell id="flow_user_in" value="&lt;b&gt;{jobId, primaryResumeId, templateResumeId}&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1e3a5f;strokeWidth=2;fontSize=11;fontFamily=Inter;fontColor=#1e3a5f;" edge="1" parent="1" source="user" target="orchestrator">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Orchestrator → User (final output) -->
+        <mxCell id="user_end" value="&lt;b&gt;User&lt;/b&gt;&lt;br&gt;Downloads File" style="shape=ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontFamily=Inter;" vertex="1" parent="1">
+          <mxGeometry x="620" y="1920" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_out" value="&lt;b&gt;DOCX / PDF Buffer → Browser Download&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1e3a5f;strokeWidth=2;fontSize=11;fontFamily=Inter;fontColor=#1e3a5f;" edge="1" parent="1" source="orchestrator" target="user_end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- LEGEND                                                -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#bdbdbd;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="170" width="220" height="295" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_title" value="&lt;b&gt;LEGEND&lt;/b&gt;" style="text;html=1;fontSize=13;fontFamily=Inter;fontColor=#1e3a5f;fillColor=none;strokeColor=none;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="175" width="220" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="leg1" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2ff;strokeColor=#4a86c8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1395" y="208" width="20" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg1t" value="Input Resolution" style="text;html=1;fontSize=10;fontFamily=Inter;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="205" width="120" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg2" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#4caf50;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1395" y="233" width="20" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg2t" value="Parsing &amp; Extraction" style="text;html=1;fontSize=10;fontFamily=Inter;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="230" width="130" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg3" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#f57c00;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1395" y="258" width="20" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg3t" value="ATS Detection" style="text;html=1;fontSize=10;fontFamily=Inter;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="255" width="120" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg4" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ede7f6;strokeColor=#7e57c2;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1395" y="283" width="20" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg4t" value="AI Analysis (18 tasks)" style="text;html=1;fontSize=10;fontFamily=Inter;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="280" width="140" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg5" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#e53935;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1395" y="308" width="20" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg5t" value="Quality Gate Loop" style="text;html=1;fontSize=10;fontFamily=Inter;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="305" width="130" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg6" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0f7fa;strokeColor=#00838f;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1395" y="333" width="20" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg6t" value="Export Synthesis" style="text;html=1;fontSize=10;fontFamily=Inter;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="330" width="120" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg7" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#8e24aa;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1395" y="358" width="20" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg7t" value="File Generation" style="text;html=1;fontSize=10;fontFamily=Inter;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="355" width="120" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg8" value="" style="endArrow=classic;html=1;strokeColor=#f9a825;strokeWidth=2;dashed=1;dashPattern=8 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1395" y="395" as="sourcePoint" />
+            <mxPoint x="1415" y="395" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg8t" value="Refinement loop" style="text;html=1;fontSize=10;fontFamily=Inter;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="385" width="120" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg9" value="" style="endArrow=classic;html=1;strokeColor=#1e3a5f;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1395" y="420" as="sourcePoint" />
+            <mxPoint x="1415" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg9t" value="Primary data flow" style="text;html=1;fontSize=10;fontFamily=Inter;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="410" width="120" height="22" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

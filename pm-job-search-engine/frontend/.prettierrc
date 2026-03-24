@@ -1,0 +1,33 @@
+# Frontend Configuration Files
+
+## tsconfig.json
+- TypeScript strict mode enabled
+- Path aliases configured (@/components, @/utils, etc.)
+- Target: ES2020
+- Module resolution: bundler
+
+## tailwind.config.ts
+- Color scheme customized
+- Custom shadows and spacing
+- Responsive breakpoints
+- Dark mode ready (can be enabled)
+
+## next.config.js
+- Image optimization configured
+- Environment variables setup
+- SWC minification enabled
+- Security headers configured
+
+## ESLint (.eslintrc.json)
+- Next.js recommended rules enabled
+- TypeScript support
+- Import organization
+- React best practices
+
+## Prettier (.prettierrc)
+- 2-space indentation
+- Single quotes
+- Trailing commas: es5
+- Arrow function parentheses: always
+
+## Use these configurations to develop consistently.

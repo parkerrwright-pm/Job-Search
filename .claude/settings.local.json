@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash \"/Users/parkerwright/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/58a6ed95-4ddb-4fd0-b2c8-1e3fad714acd/b8bd0740-251d-491e-a858-378e04414dee/skills/web-artifacts-builder/scripts/init-artifact.sh\" job-search-hub)",
+      "Read(//usr/local/bin/**)",
+      "Read(//Users/parkerwright/.nvm/versions/**)",
+      "Bash(export PATH=/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$PATH)",
+      "Read(//Applications/**)"
+    ]
+  }
+}

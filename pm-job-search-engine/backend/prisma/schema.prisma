@@ -1,0 +1,344 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String?
+  firstName String?
+  lastName  String?
+  phone     String?
+  avatar    String?
+  
+  // Profile
+  headline  String?
+  bio       String?
+  linkedinUrl String?
+  portfolioUrl String?
+  linkedinProfileData Json?   // Cached Apify-scraped LinkedIn profile (scraped once on URL save)
+  
+  // Settings
+  preferredLLM String @default("gpt-4")
+  resumeParsingPrefs Json?
+  aiPreferences Json?
+  notificationSettings Json?
+  
+  // Relations
+  jobs      Job[]
+  resumes   Resume[]
+  analyses  AIAnalysis[]
+  researchCache ResearchCache[]
+  interviewPrep InterviewPrep[]
+  networkingMessages NetworkingMessage[]
+  activityLogs ActivityLog[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+// Job Model - Pipeline Tracker
+model Job {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Job Details
+  title     String
+  company   String
+  location  String?
+  jobUrl    String?
+  jobDescriptionHtml String? @db.Text
+  jobDescriptionText String? @db.Text
+  salary    String?
+  salaryMin Int?
+  salaryMax Int?
+  
+  // Application Tracking
+  stage     JobStage @default(SAVED)
+  appliedAt DateTime?
+  savedAt   DateTime @default(now())
+  
+  // Contact Info
+  recruiter String?
+  recruiterEmail String?
+  hiringManager String?
+  hiringManagerEmail String?
+  referralStatus String?
+  
+  // Follow-up
+  followUpDate DateTime?
+  lastFollowUpAt DateTime?
+  notes     String? @db.Text
+  
+  // Resume
+  resumeVersion String? // links to specific Resume version
+  
+  // Additional Fields
+  priority  String @default("MEDIUM") // HIGH, MEDIUM, LOW
+  customFields Json? // for user-defined fields
+  tags      String[] @default([])
+  selectedKeywords String[] @default([]) // user-selected missing keywords to integrate
+  alignmentRating Int? // 1-5 star rating: how well resume matches JD
+  
+  // Relations
+  analyses  AIAnalysis[]
+  jobAnalysis JobAnalysis?
+  timeline  ApplicationTimeline[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, stage])
+  @@index([userId, updatedAt])
+}
+
+// Job Stage Enum
+enum JobStage {
+  SAVED
+  APPLIED
+  PHONE_SCREEN
+  RECRUITER_SCREEN
+  HIRING_MANAGER
+  TAKE_HOME
+  PANEL
+  FINAL
+  OFFER
+  NEGOTIATION
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  ARCHIVED
+}
+
+// Resume Model - Version Manager
+model Resume {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  fileName  String
+  fileUrl   String
+  fileSize  Int
+  mimeType  String
+  
+  // Version Control
+  version   Int
+  title     String?
+  description String?
+  isPrimary Boolean @default(false)
+  
+  // Parsed Content
+  parsedContent Json? // Extracted text/structure
+  skills    String[]
+  experiences Json?
+  education Json?
+  
+  // ATS Analysis
+  atsScore  Float?
+  keywordDensity Json?
+  missingKeywords String[]
+  atsAnalysisDate DateTime?
+  
+  // Optimizations
+  tailoredForJob String? // Job ID this was tailored for
+  customizations Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, version])
+  @@index([userId, isPrimary])
+}
+
+// AI Analysis Cache - Resume & Job Analysis
+model AIAnalysis {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  jobId     String?
+  job       Job?       @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  
+  // Analysis Type
+  type      String // KEYWORD_EXTRACT, RESUME_TAILOR, ATS_SCORE, etc.
+  
+  // Input
+  inputData Json
+  
+  // Output
+  output    Json // Structured analysis results
+  
+  // Score/Metrics
+  score     Float?
+  metrics   Json?
+  
+  // Caching
+  expiresAt DateTime
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, type])
+  @@index([expiresAt])
+}
+
+// Company Research Cache
+model ResearchCache {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  company   String
+  
+  // Research Data
+  overview  String? @db.Text
+  businessModel String? @db.Text
+  productStrategy String? @db.Text
+  targetCustomers String? @db.Text
+  competitors String[]
+  
+  // Insights
+  challenges Json?
+  opportunities Json?
+  strategicPriorities String[]
+  
+  // Additional
+  websiteUrl String?
+  linkedinUrl String?
+  crunchbaseUrl String?
+  funding String?
+  employees Int?
+  
+  // Caching
+  expiresAt DateTime
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, company])
+  @@index([expiresAt])
+}
+
+// Interview Preparation
+model InterviewPrep {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title     String
+  company   String
+  
+  // Questions
+  questions Json[] // Array of {question, category, difficulty}
+  
+  // Stories (STAR Format)
+  stories   Json[] // Array of {problem, action, result, context}
+  
+  // Product Questions
+  productQuestions Json[]
+  
+  // Notes
+  notes     String? @db.Text
+  resources String[] @default([])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Networking Messages
+model NetworkingMessage {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  recipientType String // HIRING_MANAGER, RECRUITER, EMPLOYEE
+  recipientName String?
+  recipientEmail String?
+  
+  company   String
+  role      String
+  
+  // Messages
+  shortMessage String? @db.Text // Slack/DM
+  longMessage String? @db.Text  // LinkedIn
+  
+  // Metadata
+  used      Boolean @default(false)
+  sentAt    DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, recipientType])
+}
+
+// Application Timeline
+model ApplicationTimeline {
+  id        String     @id @default(cuid())
+  jobId     String
+  job       Job        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  
+  event     String
+  stage     JobStage?
+  notes     String?
+  
+  createdAt DateTime @default(now())
+
+  @@index([jobId, createdAt])
+}
+
+// Activity Log
+model ActivityLog {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  action    String
+  entity    String
+  entityId  String?
+  
+  changes   Json? // Before/after values
+  
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// Comprehensive Job Analysis (20-Section System)
+model JobAnalysis {
+  id        String     @id @default(cuid())
+  jobId     String     @unique
+  job       Job        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  
+  // Full analysis data structure
+  analysisData Json // 20-section comprehensive analysis
+  
+  // Individual section scores for quick access
+  atsScore  Float?
+  keywordDensity Float?
+  matchScore Float?
+  
+  // Export files
+  wordDocPath String?
+  pdfPath   String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([jobId, createdAt])
+}
+

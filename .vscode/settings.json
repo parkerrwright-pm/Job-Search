@@ -1,0 +1,22 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^lsof -nP -iTCP -sTCP:LISTEN \\| rg ':\\(3000\\|3001\\|3002\\|3010\\|5001\\)\\\\b' \\|\\| true$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^lsof -nP -iTCP -sTCP:LISTEN \\| grep -E ':\\(3000\\|3001\\|3002\\|3010\\|5001\\)\\\\b' \\|\\| true$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd '/Users/parkerwright/Documents/Job Search Engine/pm-job-search-engine/backend' && npm run dev$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd '/Users/parkerwright/Documents/Job Search Engine/pm-job-search-engine/frontend' && npm run dev:isolated:3002$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    },
+    "python.terminal.useEnvFile": true,
+    "python.envFile": "${workspaceFolder}/pm-job-search-engine/backend/.env"
+}
