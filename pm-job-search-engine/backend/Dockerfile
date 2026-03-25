@@ -19,6 +19,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl ca-certificates
+
 # Install production dependencies only
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
@@ -26,9 +29,8 @@ RUN npm ci --omit=dev
 # Copy built app from builder
 COPY --from=builder /app/dist ./dist
 
-# Prisma: schema, migrations, and generated client
+# Prisma: schema and migrations
 COPY prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Expose port
 EXPOSE 5000
