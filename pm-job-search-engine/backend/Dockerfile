@@ -32,6 +32,9 @@ COPY --from=builder /app/dist ./dist
 # Prisma: schema and migrations
 COPY prisma ./prisma
 
+# Generate Prisma client (needs schema to be present)
+RUN npx prisma generate
+
 # Expose port
 EXPOSE 5000
 
