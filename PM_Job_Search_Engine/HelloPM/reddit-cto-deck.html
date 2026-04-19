@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reddit CTO Round Technical Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      :root {
+        --bg: #0e1113;
+        --panel: #151a1f;
+        --panel-2: #1b2229;
+        --ink: #f5f7fa;
+        --muted: #9fb0c0;
+        --brand: #ff4500;
+        --brand-soft: #ff7b4d;
+        --good: #2dd4bf;
+        --warn: #f59e0b;
+        --line: #2a3440;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 15% 20%, rgba(255, 69, 0, 0.16), transparent 40%),
+          radial-gradient(circle at 85% 80%, rgba(45, 212, 191, 0.1), transparent 34%),
+          linear-gradient(140deg, #0c0f12 0%, #11161c 45%, #0f1318 100%);
+        overflow: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+        background-size: 34px 34px;
+        pointer-events: none;
+      }
+
+      .deck {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        padding: clamp(18px, 3.1vw, 40px);
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 16px;
+        opacity: 0;
+        transform: translateY(22px) scale(0.99);
+        pointer-events: none;
+        transition: opacity 320ms ease, transform 320ms ease;
+      }
+
+      .slide.active {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+
+      .kicker {
+        font-family: "Space Grotesk", sans-serif;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--brand-soft);
+        font-size: clamp(12px, 1.1vw, 15px);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        line-height: 1.1;
+      }
+
+      h1 {
+        font-size: clamp(30px, 5vw, 62px);
+      }
+
+      h2 {
+        font-size: clamp(24px, 3vw, 40px);
+      }
+
+      h3 {
+        font-size: clamp(17px, 1.8vw, 24px);
+        color: #ffe6dc;
+      }
+
+      p,
+      li {
+        font-size: clamp(14px, 1.2vw, 19px);
+        line-height: 1.38;
+      }
+
+      .sub {
+        color: var(--muted);
+        max-width: 1000px;
+      }
+
+      .cards {
+        display: grid;
+        gap: 12px;
+      }
+
+      .cards.cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cards.cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .hero-metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+        background: linear-gradient(180deg, rgba(255, 69, 0, 0.08), rgba(255, 255, 255, 0.02));
+      }
+
+      .metric strong {
+        display: block;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: clamp(22px, 2.4vw, 36px);
+        color: #fff0ea;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 6px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 13px 15px;
+        box-shadow: 0 8px 26px rgba(0, 0, 0, 0.24);
+      }
+
+      .card ul {
+        margin: 8px 0 0 17px;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: rgba(255, 69, 0, 0.16);
+        border: 1px solid rgba(255, 69, 0, 0.5);
+        color: #ffd7c7;
+        font-size: 13px;
+        margin: 0 6px 6px 0;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 1.2fr 0.95fr;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .matrix {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--line);
+        overflow: hidden;
+        border-radius: 14px;
+      }
+
+      .matrix th,
+      .matrix td {
+        border-bottom: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        padding: 10px 10px;
+        vertical-align: top;
+      }
+
+      .matrix th:last-child,
+      .matrix td:last-child {
+        border-right: none;
+      }
+
+      .matrix tr:last-child td {
+        border-bottom: none;
+      }
+
+      .matrix th {
+        background: rgba(255, 69, 0, 0.14);
+        text-align: left;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 14px;
+      }
+
+      .mono,
+      pre,
+      code {
+        font-family: "JetBrains Mono", Menlo, Consolas, monospace;
+      }
+
+      pre {
+        border-radius: 14px;
+        border: 1px solid #303848;
+        font-size: clamp(11px, 1vw, 14px);
+        margin: 0;
+        max-height: 54vh;
+      }
+
+      .schema {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .entity {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel-2);
+        overflow: hidden;
+      }
+
+      .entity h4 {
+        margin: 0;
+        padding: 9px 11px;
+        background: rgba(255, 69, 0, 0.2);
+        font-family: "Space Grotesk", sans-serif;
+      }
+
+      .entity ul {
+        margin: 0;
+        padding: 9px 11px 11px 22px;
+      }
+
+      .entity li {
+        font-size: 13px;
+        color: #dce5ef;
+        line-height: 1.3;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto 1fr;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .node {
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .arrow {
+        color: var(--brand-soft);
+        font-size: 30px;
+        line-height: 1;
+      }
+
+      .note {
+        font-size: 13px;
+        color: #b7c5d4;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #9aa9b8;
+        font-size: 13px;
+      }
+
+      .controls {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 3;
+      }
+
+      .btn {
+        width: 42px;
+        height: 42px;
+        border: 1px solid #39414f;
+        border-radius: 10px;
+        background: #1a2027;
+        color: #f2f6fa;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        background: #242d37;
+      }
+
+      .counter {
+        min-width: 64px;
+        text-align: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        color: #dbe6f1;
+        background: #161c22;
+        border: 1px solid #343e4c;
+        border-radius: 10px;
+        padding: 10px 8px;
+      }
+
+      .tag {
+        display: inline-block;
+        background: rgba(45, 212, 191, 0.14);
+        color: #a8f3e8;
+        border: 1px solid rgba(45, 212, 191, 0.35);
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: 13px;
+        margin: 4px 8px 0 0;
+      }
+
+      .small {
+        font-size: 13px;
+        color: #c8d4df;
+        line-height: 1.4;
+      }
+
+      .doc-grid {
+        display: grid;
+        grid-template-columns: 0.82fr 1.18fr;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .stacked {
+        display: grid;
+        gap: 10px;
+      }
+
+      .arch-flow {
+        display: grid;
+        grid-template-columns: repeat(11, minmax(0, 1fr));
+        gap: 8px;
+        align-items: center;
+        margin-top: 4px;
+      }
+
+      .arch-node {
+        grid-column: span 2;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255, 69, 0, 0.08), rgba(255, 255, 255, 0.02));
+        padding: 10px 9px;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .arch-node::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 4px;
+        background: linear-gradient(180deg, var(--brand), var(--good));
+        opacity: 0.9;
+      }
+
+      .arch-node span {
+        display: block;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 14px;
+        line-height: 1.18;
+        color: #fff0ea;
+        max-width: 140px;
+      }
+
+      .arch-arrow {
+        position: relative;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(255, 123, 77, 0.45), rgba(255, 123, 77, 0.95));
+      }
+
+      .arch-arrow::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        border-top: 2px solid var(--brand-soft);
+        border-right: 2px solid var(--brand-soft);
+        transform: translateY(-50%) rotate(45deg);
+      }
+
+      .vertical-columns {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .vertical-columns .card {
+        min-height: 178px;
+      }
+
+      @media (max-width: 960px) {
+        .hero,
+        .cards.cols-2,
+        .cards.cols-3,
+        .split,
+        .doc-grid,
+        .schema,
+        .flow,
+        .arch-flow,
+        .vertical-columns,
+        .hero-metrics {
+          grid-template-columns: 1fr;
+        }
+
+        .arrow {
+          display: none;
+        }
+
+        .arch-arrow {
+          display: none;
+        }
+
+        .arch-node {
+          grid-column: span 1;
+        }
+
+        pre {
+          max-height: 42vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck" id="deck">
+      <section class="slide active">
+        <div>
+          <p class="kicker">Final Round • Product Manager • CTO Technical Discussion</p>
+          <h1>Reddit Technical Deep Dive</h1>
+          <p class="sub">
+            I am Parker Wright, a Senior Product Manager presenting how I think about product,
+            architecture, and technical trade-offs in a company like Reddit.
+          </p>
+        </div>
+        <div class="hero">
+          <article class="card">
+            <h3>Presenter Frame</h3>
+            <ul>
+              <li>10+ years leading platform products across healthcare, benefits, and marketplace-style systems.</li>
+              <li>Hands-on with APIs, SQL, dashboards, workflow automation, and operating models that scale.</li>
+              <li>My goal in this discussion: show how I connect product decisions to technical implementation.</li>
+            </ul>
+          </article>
+          <div class="hero-metrics">
+            <div class="metric">
+              <strong>150K+</strong>
+              <span>participant enrollments enabled</span>
+            </div>
+            <div class="metric">
+              <strong>110K+</strong>
+              <span>manual reimbursement requests eliminated annually</span>
+            </div>
+            <div class="metric">
+              <strong>2M+</strong>
+              <span>administrative requests reduced</span>
+            </div>
+            <div class="metric">
+              <strong>$2.7M</strong>
+              <span>annual operational savings driven</span>
+            </div>
+        </div>
+        </div>
+        <div class="footer">
+          <span>Parker Wright • Senior Product Manager</span>
+          <span>Use arrow keys or buttons to navigate</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 1</p>
+          <h2>Reddit Technology Stack: Front-End</h2>
+          <p class="sub">Current public signals suggest a modern React-based web stack, native mobile apps, and a platform layer built for experimentation and developer extensibility.</p>
+        </div>
+        <div class="cards cols-2">
+          <article class="card">
+            <h3>Web Experience</h3>
+            <div class="pill">React</div>
+            <div class="pill">TypeScript</div>
+            <div class="pill">JavaScript</div>
+            <ul>
+              <li>Modern reddit.com is React-based, with TypeScript used across many product surfaces.</li>
+              <li>old.reddit.com reflects an older architecture, including legacy Backbone-era patterns.</li>
+              <li>This setup favors faster UI iteration, reusable components, and controlled experimentation.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Mobile + Platform</h3>
+            <div class="pill">iOS / Android Native</div>
+            <div class="pill">Kotlin (Android libs)</div>
+            <div class="pill">Devvit</div>
+            <ul>
+              <li>First-party native mobile apps for iOS and Android.</li>
+              <li>Kotlin shows up in Android performance-sensitive libraries and mobile tooling.</li>
+              <li>Devvit extends Reddit with TypeScript and React-like UI primitives for developers.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Category: Front-End</span>
+          <span>Q1 • 1/3</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 1</p>
+          <h2>Reddit Technology Stack: Back-End</h2>
+          <p class="sub">The back end appears to be a distributed service architecture that started heavily in Python and has moved selectively toward Go for speed and concurrency.</p>
+        </div>
+        <div class="cards cols-2">
+          <article class="card">
+            <h3>Service Layer</h3>
+            <div class="pill">Python (legacy)</div>
+            <div class="pill">Go (modern migration)</div>
+            <div class="pill">Baseplate</div>
+            <ul>
+              <li>Baseplate.py was a major internal Python service framework.</li>
+              <li>Baseplate.go points to a deliberate move toward Go in performance-critical services.</li>
+              <li>Microservice boundaries help separate ownership, scaling, and deployment risk.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Connectivity + Runtime</h3>
+            <div class="pill">Thrift RPC</div>
+            <div class="pill">REST</div>
+            <div class="pill">WebSockets</div>
+            <ul>
+              <li>Service-to-service calls commonly use Thrift in internal systems.</li>
+              <li>Public product surfaces expose REST-style APIs.</li>
+              <li>Real-time features such as chat rely on persistent connections such as WebSockets.</li>
+              <li>Supporting runtime infrastructure includes NGINX, HAProxy, and app servers.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Category: Back-End</span>
+          <span>Q1 • 2/3</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 1</p>
+          <h2>Reddit Technology Stack: Database + Data Infra</h2>
+          <p class="sub">Reddit likely uses different storage layers for different jobs: relational integrity, large-scale feed traffic, caching, search, and content delivery.</p>
+        </div>
+        <div class="cards cols-3">
+          <article class="card">
+            <h3>Relational</h3>
+            <div class="pill">PostgreSQL</div>
+            <ul>
+              <li>Good fit for structured records, transactions, and entities with relationships.</li>
+              <li>Likely used for identity, account, and structured metadata.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Distributed / High Throughput</h3>
+            <div class="pill">Cassandra</div>
+            <ul>
+              <li>Designed for always-on scale across many nodes.</li>
+              <li>Useful for feed, timeline, or heavy interaction workloads.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Caching + Search + Delivery</h3>
+            <div class="pill">Redis</div>
+            <div class="pill">Memcached</div>
+            <div class="pill">Solr/Lucidworks</div>
+            <div class="pill">Fastly CDN</div>
+            <ul>
+              <li>Redis and Memcached reduce repeat-read latency.</li>
+              <li>Search infrastructure powers discovery and relevance.</li>
+              <li>Fastly and object storage reduce global content latency.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Category: Database and Infra</span>
+          <span>Q1 • 3/3</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 2</p>
+          <h2>Technology Alternatives and Trade-Offs #1</h2>
+          <p class="sub">Chosen pair: PostgreSQL vs Cassandra. The practical question is not which one is better overall, but which one fits each workload.</p>
+        </div>
+        <div class="split">
+          <table class="matrix">
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>PostgreSQL</th>
+                <th>Cassandra</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Consistency model</td>
+                <td>Strong ACID transactions</td>
+                <td>Tunable/eventual consistency</td>
+              </tr>
+              <tr>
+                <td>Query flexibility</td>
+                <td>Rich SQL, joins, analytics</td>
+                <td>Query-by-design, limited joins</td>
+              </tr>
+              <tr>
+                <td>Scaling pattern</td>
+                <td>Vertical first, replicas/sharding needed later</td>
+                <td>Horizontal by default across nodes/regions</td>
+              </tr>
+              <tr>
+                <td>Best fit</td>
+                <td>User accounts, auth, moderation metadata</td>
+                <td>High-volume feed and interaction events</td>
+              </tr>
+            </tbody>
+          </table>
+          <article class="card">
+            <h3>Definitions</h3>
+            <p class="small">PostgreSQL is a relational SQL database used for structured data and reliable transactions.</p>
+            <p class="small">Cassandra is a distributed NoSQL database built for very large scale and high availability.</p>
+            <h3>PM Recommendation</h3>
+            <ul>
+              <li>Use PostgreSQL as system of record for entities requiring integrity and relational joins.</li>
+              <li>Use Cassandra where throughput and uptime under massive traffic spikes dominate.</li>
+              <li>Accept operational complexity of polyglot persistence for better product performance.</li>
+            </ul>
+            <span class="tag">Trade-off: Simplicity vs Scale</span>
+            <span class="tag">Trade-off: ACID vs Throughput</span>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Alternative Pair 1</span>
+          <span>Q2 • 1/2</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 2</p>
+          <h2>Technology Alternatives and Trade-Offs #2</h2>
+          <p class="sub">Chosen pair: Python vs Go. This is mainly a trade-off between developer speed and runtime efficiency.</p>
+        </div>
+        <div class="split">
+          <table class="matrix">
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Python</th>
+                <th>Go</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dev velocity</td>
+                <td>Very high for prototyping and iteration</td>
+                <td>Moderate, more explicit engineering</td>
+              </tr>
+              <tr>
+                <td>Runtime performance</td>
+                <td>Lower throughput per instance</td>
+                <td>High throughput, low memory overhead</td>
+              </tr>
+              <tr>
+                <td>Concurrency</td>
+                <td>GIL constraints for CPU-bound tasks</td>
+                <td>Goroutines and channels simplify scale</td>
+              </tr>
+              <tr>
+                <td>Ecosystem</td>
+                <td>Huge libraries, easy onboarding</td>
+                <td>Smaller but robust systems tooling</td>
+              </tr>
+            </tbody>
+          </table>
+          <article class="card">
+            <h3>Definitions</h3>
+            <p class="small">Python is a high-level language that is fast to write and easy to iterate in.</p>
+            <p class="small">Go is a compiled systems language built for concurrency, low latency, and operational simplicity.</p>
+            <h3>PM Recommendation</h3>
+            <ul>
+              <li>Keep Python where product iteration speed is the bottleneck.</li>
+              <li>Move traffic-critical services to Go where p95 latency and infra cost matter most.</li>
+              <li>Plan migration service-by-service to reduce org risk and preserve delivery cadence.</li>
+            </ul>
+            <span class="tag">Trade-off: Hiring pool vs Perf</span>
+            <span class="tag">Trade-off: Speed now vs Scale later</span>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Alternative Pair 2</span>
+          <span>Q2 • 2/2</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 3</p>
+          <h2>Database Schema for Core Reddit Features</h2>
+          <p class="sub">This logical schema maps directly to the requested user flows: registration, subreddit creation, posting, likes, and comments.</p>
+        </div>
+        <div class="schema">
+          <article class="entity">
+            <h4>users</h4>
+            <ul>
+              <li>Supports: user registration and identity</li>
+              <li>id (PK, bigint)</li>
+              <li>username (unique, indexed)</li>
+              <li>email (unique)</li>
+              <li>password_hash</li>
+              <li>karma_score default 0</li>
+              <li>created_at</li>
+            </ul>
+          </article>
+          <article class="entity">
+            <h4>subreddits</h4>
+            <ul>
+              <li>Supports: creating and owning a subreddit</li>
+              <li>id (PK)</li>
+              <li>name (unique, indexed)</li>
+              <li>title</li>
+              <li>description</li>
+              <li>created_by_user_id (FK users.id)</li>
+              <li>created_at</li>
+            </ul>
+          </article>
+          <article class="entity">
+            <h4>posts</h4>
+            <ul>
+              <li>Supports: posting into a subreddit</li>
+              <li>id (PK)</li>
+              <li>subreddit_id (FK subreddits.id)</li>
+              <li>user_id (FK users.id)</li>
+              <li>title</li>
+              <li>description</li>
+              <li>url nullable</li>
+              <li>created_at</li>
+            </ul>
+          </article>
+          <article class="entity">
+            <h4>votes</h4>
+            <ul>
+              <li>Supports: liking or voting on a post</li>
+              <li>id (PK)</li>
+              <li>post_id (FK posts.id)</li>
+              <li>user_id (FK users.id)</li>
+              <li>vote_type smallint (1 up, -1 down)</li>
+              <li>created_at</li>
+              <li>UNIQUE(user_id, post_id)</li>
+            </ul>
+          </article>
+          <article class="entity">
+            <h4>comments</h4>
+            <ul>
+              <li>Supports: comments and threaded replies</li>
+              <li>id (PK)</li>
+              <li>post_id (FK posts.id)</li>
+              <li>user_id (FK users.id)</li>
+              <li>parent_comment_id nullable (FK comments.id)</li>
+              <li>body</li>
+              <li>created_at</li>
+            </ul>
+          </article>
+          <article class="entity">
+            <h4>Relationship Notes</h4>
+            <ul>
+              <li>One user can create many subreddits and posts.</li>
+              <li>One post can receive many votes and comments.</li>
+              <li>Comments support threaded replies via self-FK.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Logical schema</span>
+          <span>Q3 • 1/2</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 3</p>
+          <h2>DDL Example (PostgreSQL)</h2>
+          <p class="sub">First is the documentation view of what each table does. Second is the actual PostgreSQL DDL that implements it.</p>
+        </div>
+        <div class="doc-grid">
+          <article class="card">
+            <h3>Table Documentation</h3>
+            <ul>
+              <li><strong>users</strong>: stores registered user identity and account metadata.</li>
+              <li><strong>subreddits</strong>: stores community definitions and who created them.</li>
+              <li><strong>posts</strong>: stores content a user publishes into a subreddit.</li>
+              <li><strong>votes</strong>: stores one user's like or vote against one post.</li>
+              <li><strong>comments</strong>: stores replies on a post, including threaded replies.</li>
+            </ul>
+          </article>
+          <pre><code class="language-sql">CREATE TABLE users (
+  id BIGSERIAL PRIMARY KEY,
+  username VARCHAR(30) UNIQUE NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  karma_score INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE subreddits (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(60) UNIQUE NOT NULL,
+  title VARCHAR(120) NOT NULL,
+  description TEXT,
+  created_by_user_id BIGINT NOT NULL REFERENCES users(id),
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE posts (
+  id BIGSERIAL PRIMARY KEY,
+  subreddit_id BIGINT NOT NULL REFERENCES subreddits(id),
+  user_id BIGINT NOT NULL REFERENCES users(id),
+  title VARCHAR(300) NOT NULL,
+  description TEXT,
+  url TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE votes (
+  id BIGSERIAL PRIMARY KEY,
+  post_id BIGINT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  vote_type SMALLINT NOT NULL CHECK (vote_type IN (1, -1)),
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  UNIQUE (user_id, post_id)
+);
+
+CREATE TABLE comments (
+  id BIGSERIAL PRIMARY KEY,
+  post_id BIGINT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  parent_comment_id BIGINT REFERENCES comments(id) ON DELETE CASCADE,
+  body TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+        </div>
+        <div class="footer">
+          <span>Implementation-ready DDL</span>
+          <span>Q3 • 2/2</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 4</p>
+          <h2>SQL Queries (Part 1 of 2)</h2>
+          <p class="sub">Queries below use the schema from Q3 and answer the first three analytics requirements.</p>
+        </div>
+        <pre><code class="language-sql">-- 1) Recent 10 posts in a subreddit + poster information
+SELECT
+  p.id,
+  p.title,
+  p.description,
+  p.created_at,
+  u.id AS user_id,
+  u.username,
+  u.karma_score
+FROM posts p
+JOIN users u ON u.id = p.user_id
+JOIN subreddits s ON s.id = p.subreddit_id
+WHERE s.name = :subreddit_name
+ORDER BY p.created_at DESC
+LIMIT 10;
+
+-- 2) Most-liked post ever (upvotes only)
+SELECT
+  p.id,
+  p.title,
+  p.user_id,
+  COUNT(*) AS like_count
+FROM posts p
+JOIN votes v ON v.post_id = p.id
+WHERE v.vote_type = 1
+GROUP BY p.id, p.title, p.user_id
+ORDER BY like_count DESC
+LIMIT 1;
+
+-- 3) Number of subreddits created by a particular user
+SELECT
+  created_by_user_id AS user_id,
+  COUNT(*) AS subreddits_created
+FROM subreddits
+WHERE created_by_user_id = :user_id
+GROUP BY created_by_user_id;</code></pre>
+        <div class="footer">
+          <span>Query set A</span>
+          <span>Q4 • 1/2</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 4</p>
+          <h2>SQL Queries (Part 2 of 2)</h2>
+          <p class="sub">Remaining queries for top liker and URL-bearing posts, followed by indexes that specifically support the Question 4 query set.</p>
+        </div>
+        <pre><code class="language-sql">-- 4) User who has given the most likes (upvotes)
+SELECT
+  u.id AS user_id,
+  u.username,
+  COUNT(*) AS likes_given
+FROM votes v
+JOIN users u ON u.id = v.user_id
+WHERE v.vote_type = 1
+GROUP BY u.id, u.username
+ORDER BY likes_given DESC
+LIMIT 1;
+
+-- 5) All posts that contain a URL in description OR url field
+SELECT
+  id,
+  subreddit_id,
+  user_id,
+  title,
+  description,
+  url,
+  created_at
+FROM posts
+WHERE
+  url IS NOT NULL
+  OR description ~* '(https?://|www\.)';</code></pre>
+        <div class="cards cols-2">
+          <article class="card">
+            <h3>Indexing Recommendations</h3>
+            <ul>
+              <li>posts(subreddit_id, created_at DESC): helps Query 1 return recent posts in a subreddit quickly.</li>
+              <li>votes(post_id, vote_type): helps Query 2 count likes by post efficiently.</li>
+              <li>votes(user_id, vote_type): helps Query 4 find the user who has given the most likes.</li>
+              <li>subreddits(created_by_user_id): helps Query 3 count communities created by one user.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>What These Indexes Do</h3>
+            <ul>
+              <li>They reduce full-table scans on the exact access patterns.</li>
+              <li>They keep feed reads and aggregation queries fast as post and vote volume grows.</li>
+              <li>They are the first indexes I would add before moving to heavier denormalization.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Query set B</span>
+          <span>Q4 • 2/2</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 5</p>
+          <h2>DuckDuckGo x Reddit Partnership API</h2>
+          <p class="sub">Goal: return relevant Reddit posts for a DuckDuckGo search query while preserving attribution, rate control, and revenue tracking.</p>
+        </div>
+        <div class="cards cols-2">
+          <article class="card">
+            <h3>Primary Endpoint</h3>
+            <pre><code class="language-http">GET /api/v1/partner/search/posts
+Headers:
+  X-Partner-Key: &lt;api_key&gt;
+  X-Request-Id: &lt;uuid&gt;
+
+Query Params:
+  q=product+strategy
+  limit=5            (max 10)
+  subreddit=productmanagement (optional)
+  sort=relevance|hot|new|top
+  time_range=day|week|month|year|all
+  include_nsfw=false</code></pre>
+          </article>
+          <article class="card">
+            <h3>Sample Response</h3>
+            <pre><code class="language-json">{
+  "request_id": "ab2f5f1c-...",
+  "query": "product strategy",
+  "results": [
+    {
+      "post_id": "t3_abc123",
+      "title": "How PMs prioritize roadmap",
+      "permalink": "https://reddit.com/r/productmanagement/...",
+      "subreddit": "productmanagement",
+      "author": "u/example",
+      "score": 1240,
+      "comment_count": 318,
+      "created_utc": 1768431034,
+      "snippet": "Top frameworks used by PMs...",
+      "thumbnail_url": "https://..."
+    }
+  ],
+  "meta": {
+    "result_count": 1,
+    "latency_ms": 76,
+    "cache": "HIT"
+  }
+}</code></pre>
+          </article>
+        </div>
+        <div class="footer">
+          <span>API contract</span>
+          <span>Q5 • 1/2</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 5</p>
+          <h2>Partnership Workflow, Revenue, and Governance</h2>
+          <p class="sub">This is easier to think about as a product architecture flow: request in, controls enforced, ranking applied, trust checks layered in, and an attributed response returned downstream.</p>
+        </div>
+        <div class="arch-flow" aria-label="Partnership architecture flow">
+          <div class="arch-node"><span>DuckDuckGo Search Query</span></div>
+          <div class="arch-arrow" aria-hidden="true"></div>
+          <div class="arch-node"><span>Reddit API Gateway</span></div>
+          <div class="arch-arrow" aria-hidden="true"></div>
+          <div class="arch-node"><span>Auth + Rate Limits</span></div>
+          <div class="arch-arrow" aria-hidden="true"></div>
+          <div class="arch-node"><span>Ranking Layer</span></div>
+          <div class="arch-arrow" aria-hidden="true"></div>
+          <div class="arch-node"><span>Search + Trust Signals</span></div>
+          <div class="arch-arrow" aria-hidden="true"></div>
+          <div class="arch-node"><span>Response + Attribution</span></div>
+        </div>
+        <div class="vertical-columns" style="margin-top: 10px;">
+          <article class="card">
+            <h3>Relevance and Safety</h3>
+            <ul>
+              <li>Blend lexical, engagement, and freshness signals.</li>
+              <li>Hard filters for quarantined or blocked content.</li>
+              <li>Regional policy checks before response delivery.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Attribution and Revenue</h3>
+            <ul>
+              <li>DDG sends click and impression callbacks with request_id.</li>
+              <li>Revenue share is computed in daily settlement jobs.</li>
+              <li>Auditable event logs support dispute resolution.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>SLAs and Limits</h3>
+            <ul>
+              <li>p95 latency target: under 200 ms.</li>
+              <li>Availability target: 99.9% monthly uptime.</li>
+              <li>Partner-specific quotas, bursts, and fallback behavior.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Operating model</span>
+          <span>Q5 • 2/2</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Wrap-Up</p>
+          <h2>Why I Am a Strong Fit for Reddit PM</h2>
+          <p class="sub">My edge is not just writing product strategy. It is operating at the intersection of product judgment, technical systems, and cross-functional execution.</p>
+        </div>
+        <div class="cards cols-3">
+          <article class="card">
+            <h3>How I Work</h3>
+            <ul>
+              <li>I can move from user problem to architecture discussion without losing the product goal.</li>
+              <li>I am comfortable in API, SQL, workflow, and platform-level conversations with engineers.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Why It Matters at Reddit</h3>
+            <ul>
+              <li>Reddit is a tech-first company where PM judgment has to hold up under scale and complexity.</li>
+              <li>My background is built around turning messy operational systems into scalable product capabilities.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>CTO Takeaway</h3>
+            <ul>
+              <li>I bring platform thinking, technical fluency, and a track record of measurable outcomes.</li>
+              <li>I would bring that same rigor to Reddit: clear product bets, strong engineering partnership, and execution that scales.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Parker Wright • Product Manager</span>
+          <span>Questions?</span>
+        </div>
+      </section>
+    </main>
+
+    <div class="controls" aria-label="Slide controls">
+      <button class="btn" id="prevBtn" aria-label="Previous slide">◀</button>
+      <div class="counter" id="counter">1 / 12</div>
+      <button class="btn" id="nextBtn" aria-label="Next slide">▶</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      (function () {
+        const slides = Array.from(document.querySelectorAll(".slide"));
+        const counter = document.getElementById("counter");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+
+        let idx = 0;
+
+        function render() {
+          slides.forEach((slide, i) => {
+            slide.classList.toggle("active", i === idx);
+          });
+
+          counter.textContent = `${idx + 1} / ${slides.length}`;
+          prevBtn.disabled = idx === 0;
+          nextBtn.disabled = idx === slides.length - 1;
+          prevBtn.style.opacity = idx === 0 ? "0.45" : "1";
+          nextBtn.style.opacity = idx === slides.length - 1 ? "0.45" : "1";
+
+          const codeBlocks = slides[idx].querySelectorAll("pre code");
+          codeBlocks.forEach((block) => Prism.highlightElement(block));
+        }
+
+        function goNext() {
+          if (idx < slides.length - 1) {
+            idx += 1;
+            render();
+          }
+        }
+
+        function goPrev() {
+          if (idx > 0) {
+            idx -= 1;
+            render();
+          }
+        }
+
+        nextBtn.addEventListener("click", goNext);
+        prevBtn.addEventListener("click", goPrev);
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowRight" || event.key === "PageDown") {
+            goNext();
+          }
+
+          if (event.key === "ArrowLeft" || event.key === "PageUp") {
+            goPrev();
+          }
+        });
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
