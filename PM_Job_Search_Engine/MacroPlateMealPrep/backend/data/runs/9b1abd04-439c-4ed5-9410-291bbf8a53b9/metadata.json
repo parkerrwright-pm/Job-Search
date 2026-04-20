@@ -1,0 +1,16 @@
+{
+  "id": "9b1abd04-439c-4ed5-9410-291bbf8a53b9",
+  "weekDate": "2026-04-21",
+  "operationsLead": "Parker Wright",
+  "createdAt": "2026-04-17T03:56:24.460Z",
+  "updatedAt": "2026-04-17T03:56:24.462Z",
+  "hasUpload": true,
+  "uploadFileName": "MacroPlate_Deliveries_2026-04-18_from_notes.xlsx",
+  "validation": {
+    "totalRows": 10,
+    "validRows": 10,
+    "errorCount": 0,
+    "warningCount": 0,
+    "issues": []
+  }
+}

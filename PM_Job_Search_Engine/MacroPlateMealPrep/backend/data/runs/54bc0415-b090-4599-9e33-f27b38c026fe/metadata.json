@@ -1,0 +1,22 @@
+{
+  "id": "54bc0415-b090-4599-9e33-f27b38c026fe",
+  "weekDate": "2026-04-18",
+  "operationsLead": "Parker Wright",
+  "createdAt": "2026-04-17T03:33:14.578Z",
+  "updatedAt": "2026-04-17T03:33:21.681Z",
+  "hasUpload": true,
+  "uploadFileName": "MacroPlate_Deliveries_TEMPLATE.csv",
+  "validation": {
+    "totalRows": 2,
+    "validRows": 2,
+    "errorCount": 0,
+    "warningCount": 0,
+    "issues": []
+  },
+  "routeHandoff": {
+    "driverName": "Alex Driver",
+    "routeLink": "https://www.myrouteonline.com/route/abc123",
+    "handoffAt": "2026-04-17T03:33:21.673Z"
+  },
+  "finalizedAt": "2026-04-17T03:33:21.681Z"
+}

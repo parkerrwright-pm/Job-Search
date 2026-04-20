@@ -1,0 +1,50 @@
+{
+  "totalRows": 10,
+  "validRows": 10,
+  "errorCount": 7,
+  "warningCount": 0,
+  "issues": [
+    {
+      "rowNumber": 2,
+      "severity": "error",
+      "code": "MISSING_ZIP",
+      "message": "Zip is required."
+    },
+    {
+      "rowNumber": 3,
+      "severity": "error",
+      "code": "MISSING_ZIP",
+      "message": "Zip is required."
+    },
+    {
+      "rowNumber": 4,
+      "severity": "error",
+      "code": "MISSING_ZIP",
+      "message": "Zip is required."
+    },
+    {
+      "rowNumber": 6,
+      "severity": "error",
+      "code": "MISSING_ZIP",
+      "message": "Zip is required."
+    },
+    {
+      "rowNumber": 7,
+      "severity": "error",
+      "code": "MISSING_ZIP",
+      "message": "Zip is required."
+    },
+    {
+      "rowNumber": 8,
+      "severity": "error",
+      "code": "MISSING_ZIP",
+      "message": "Zip is required."
+    },
+    {
+      "rowNumber": 11,
+      "severity": "error",
+      "code": "MISSING_ZIP",
+      "message": "Zip is required."
+    }
+  ]
+}

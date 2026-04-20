@@ -1,0 +1,26 @@
+[
+  {
+    "rowNumber": 2,
+    "customerName": "Jane Smith",
+    "address": "1234 W Example Dr",
+    "city": "Herriman",
+    "state": "UT",
+    "zip": "84096",
+    "phone": "801-555-1234",
+    "deliveryNotes": "Leave at front door",
+    "routeWeek": "4/17/26",
+    "deliveredStatus": "Pending"
+  },
+  {
+    "rowNumber": 3,
+    "customerName": "John Doe",
+    "address": "5678 S Sample Ln",
+    "city": "Riverton",
+    "state": "UT",
+    "zip": "84065",
+    "phone": "801-555-5678",
+    "deliveryNotes": "Text on arrival",
+    "routeWeek": "4/17/26",
+    "deliveredStatus": "Pending"
+  }
+]

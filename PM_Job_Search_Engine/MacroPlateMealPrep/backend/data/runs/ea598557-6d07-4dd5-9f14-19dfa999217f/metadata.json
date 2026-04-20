@@ -1,0 +1,59 @@
+{
+  "id": "ea598557-6d07-4dd5-9f14-19dfa999217f",
+  "weekDate": "2026-04-18",
+  "operationsLead": "Parker Wright",
+  "createdAt": "2026-04-17T03:47:17.010Z",
+  "updatedAt": "2026-04-17T03:47:17.064Z",
+  "hasUpload": true,
+  "uploadFileName": "MacroPlate_Deliveries_2026-04-18_from_notes.csv",
+  "validation": {
+    "totalRows": 10,
+    "validRows": 10,
+    "errorCount": 7,
+    "warningCount": 0,
+    "issues": [
+      {
+        "rowNumber": 2,
+        "severity": "error",
+        "code": "MISSING_ZIP",
+        "message": "Zip is required."
+      },
+      {
+        "rowNumber": 3,
+        "severity": "error",
+        "code": "MISSING_ZIP",
+        "message": "Zip is required."
+      },
+      {
+        "rowNumber": 4,
+        "severity": "error",
+        "code": "MISSING_ZIP",
+        "message": "Zip is required."
+      },
+      {
+        "rowNumber": 6,
+        "severity": "error",
+        "code": "MISSING_ZIP",
+        "message": "Zip is required."
+      },
+      {
+        "rowNumber": 7,
+        "severity": "error",
+        "code": "MISSING_ZIP",
+        "message": "Zip is required."
+      },
+      {
+        "rowNumber": 8,
+        "severity": "error",
+        "code": "MISSING_ZIP",
+        "message": "Zip is required."
+      },
+      {
+        "rowNumber": 11,
+        "severity": "error",
+        "code": "MISSING_ZIP",
+        "message": "Zip is required."
+      }
+    ]
+  }
+}
