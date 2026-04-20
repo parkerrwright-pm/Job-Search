@@ -148,6 +148,54 @@
         gap: 10px;
       }
 
+      .cover-brand {
+        display: flex;
+        justify-content: center;
+        margin: 2px 0 0;
+      }
+
+      .web-ring {
+        width: min(300px, 54vw);
+        aspect-ratio: 1;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        position: relative;
+        border: 1px solid rgba(255, 123, 77, 0.55);
+        background:
+          radial-gradient(circle at center, rgba(255, 69, 0, 0.22), rgba(255, 69, 0, 0.02) 56%),
+          repeating-conic-gradient(
+            from 0deg,
+            rgba(255, 123, 77, 0.38) 0deg,
+            rgba(255, 123, 77, 0.38) 1.3deg,
+            transparent 1.3deg,
+            transparent 21deg
+          );
+        box-shadow: 0 0 42px rgba(255, 69, 0, 0.22);
+      }
+
+      .web-ring::before,
+      .web-ring::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 123, 77, 0.45);
+      }
+
+      .web-ring::before {
+        inset: 13%;
+      }
+
+      .web-ring::after {
+        inset: 28%;
+      }
+
+      .reddit-logo {
+        width: min(148px, 28vw);
+        height: auto;
+        filter: drop-shadow(0 0 18px rgba(255, 69, 0, 0.4));
+      }
+
       .metric {
         border: 1px solid var(--line);
         border-radius: 14px;
@@ -379,20 +427,20 @@
       }
 
       .arch-flow {
-        display: grid;
-        grid-template-columns: repeat(11, minmax(0, 1fr));
-        gap: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
         align-items: center;
-        margin-top: 4px;
+        margin-top: 2px;
       }
 
       .arch-node {
-        grid-column: span 2;
+        flex: 0 1 auto;
         border: 1px solid var(--line);
-        border-radius: 16px;
+        border-radius: 12px;
         background: linear-gradient(180deg, rgba(255, 69, 0, 0.08), rgba(255, 255, 255, 0.02));
-        padding: 10px 9px;
-        min-height: 80px;
+        padding: 7px 8px;
+        min-height: 52px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -413,13 +461,14 @@
       .arch-node span {
         display: block;
         font-family: "Space Grotesk", sans-serif;
-        font-size: 14px;
-        line-height: 1.18;
+        font-size: 12px;
+        line-height: 1.14;
         color: #fff0ea;
-        max-width: 140px;
+        max-width: 110px;
       }
 
       .arch-arrow {
+        flex: 0 0 14px;
         position: relative;
         height: 2px;
         background: linear-gradient(90deg, rgba(255, 123, 77, 0.45), rgba(255, 123, 77, 0.95));
@@ -447,11 +496,131 @@
         min-height: 178px;
       }
 
+      .compact-cards {
+        gap: 8px;
+      }
+
+      .compact-cards .card {
+        min-height: 0;
+        padding: 11px 12px;
+      }
+
+      .compact-cards h3 {
+        font-size: clamp(15px, 1.4vw, 20px);
+      }
+
+      .compact-cards ul {
+        margin: 6px 0 0 16px;
+      }
+
+      .compact-cards li {
+        font-size: clamp(13px, 1vw, 16px);
+        line-height: 1.25;
+      }
+
+      .stack-pipeline {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .stack-layer {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+      }
+
+      .stack-layer h3 {
+        margin-bottom: 8px;
+      }
+
+      .stack-arrow {
+        display: grid;
+        place-items: center;
+        color: var(--brand-soft);
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .relationship-layout {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .hub-diagram {
+        position: relative;
+        height: 340px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255, 69, 0, 0.06), rgba(255, 255, 255, 0.01));
+        overflow: hidden;
+      }
+
+      .hub-diagram svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .map-node {
+        position: absolute;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--panel-2);
+        padding: 8px 10px;
+        min-width: 112px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .map-center {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(180deg, rgba(255, 69, 0, 0.28), rgba(255, 69, 0, 0.1));
+      }
+
+      .map-top {
+        left: 50%;
+        top: 30px;
+        transform: translateX(-50%);
+      }
+
+      .map-left {
+        left: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .map-right {
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .map-bottom {
+        left: 50%;
+        bottom: 30px;
+        transform: translateX(-50%);
+      }
+
+      .map-note {
+        font-size: 13px;
+        color: #cfd9e3;
+      }
+
       @media (max-width: 960px) {
         .hero,
         .cards.cols-2,
         .cards.cols-3,
         .split,
+        .relationship-layout,
         .doc-grid,
         .schema,
         .flow,
@@ -459,6 +628,19 @@
         .vertical-columns,
         .hero-metrics {
           grid-template-columns: 1fr;
+        }
+
+        .stack-pipeline {
+          grid-template-columns: 1fr;
+        }
+
+        .stack-arrow {
+          transform: rotate(90deg);
+          height: 20px;
+        }
+
+        .hub-diagram {
+          height: 420px;
         }
 
         .arrow {
@@ -489,6 +671,22 @@
             I am Parker Wright, a Senior Product Manager presenting how I think about product,
             architecture, and technical trade-offs in a company like Reddit.
           </p>
+        </div>
+        <div class="cover-brand" aria-label="Reddit logo with web motif">
+          <div class="web-ring">
+            <svg class="reddit-logo" viewBox="0 0 120 120" role="img" aria-label="Reddit logo">
+              <circle cx="60" cy="60" r="52" fill="#ff4500" />
+              <circle cx="60" cy="66" r="28" fill="#ffffff" />
+              <circle cx="49" cy="64" r="4.4" fill="#ff4500" />
+              <circle cx="71" cy="64" r="4.4" fill="#ff4500" />
+              <path d="M48 76c3.3 3.6 7.6 5.1 12 5.1s8.7-1.5 12-5.1" fill="none" stroke="#ff4500" stroke-width="3.8" stroke-linecap="round" />
+              <circle cx="85" cy="37" r="7.5" fill="#ffffff" />
+              <circle cx="85" cy="37" r="3.6" fill="#ff4500" />
+              <path d="M60 47l7-20 17 4" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="38" cy="55" r="8" fill="#ffffff" />
+              <circle cx="82" cy="55" r="8" fill="#ffffff" />
+            </svg>
+          </div>
         </div>
         <div class="hero">
           <article class="card">
@@ -556,7 +754,7 @@
         </div>
         <div class="footer">
           <span>Category: Front-End</span>
-          <span>Q1 • 1/3</span>
+          <span>Q1 • 1/4</span>
         </div>
       </section>
 
@@ -593,7 +791,7 @@
         </div>
         <div class="footer">
           <span>Category: Back-End</span>
-          <span>Q1 • 2/3</span>
+          <span>Q1 • 2/4</span>
         </div>
       </section>
 
@@ -635,15 +833,61 @@
         </div>
         <div class="footer">
           <span>Category: Database and Infra</span>
-          <span>Q1 • 3/3</span>
+          <span>Q1 • 3/4</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 1</p>
+          <h2>Recommended Stack Data Flow</h2>
+          <p class="sub">End-to-end view of how product requests move from the interface through application services down to SQL/NoSQL data layers and back.</p>
+        </div>
+        <div class="stack-pipeline">
+          <article class="stack-layer">
+            <h3>Front End</h3>
+            <div class="pill">React + TypeScript</div>
+            <div class="pill">iOS / Android</div>
+            <ul>
+              <li>User actions: load feed, vote, comment, search.</li>
+              <li>Sends API requests with auth/session context.</li>
+            </ul>
+          </article>
+          <div class="stack-arrow">→</div>
+          <article class="stack-layer">
+            <h3>Application Layers</h3>
+            <div class="pill">API Gateway</div>
+            <div class="pill">Service Layer</div>
+            <div class="pill">Ranking + Safety</div>
+            <ul>
+              <li>Orchestrates read/write paths and policy checks.</li>
+              <li>Chooses SQL or NoSQL path by workload pattern.</li>
+            </ul>
+          </article>
+          <div class="stack-arrow">→</div>
+          <article class="stack-layer">
+            <h3>Backend Data Layer</h3>
+            <div class="pill">PostgreSQL (system of record)</div>
+            <div class="pill">Cassandra (high-throughput events)</div>
+            <div class="pill">Redis cache</div>
+            <ul>
+              <li>SQL stores entities and relationships.</li>
+              <li>NoSQL handles feed/event volume and fan-out.</li>
+              <li>Cached results return quickly to application layer.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Flow: Front End → App Layer → Data Layer</span>
+          <span>Q1 • 4/4</span>
         </div>
       </section>
 
       <section class="slide">
         <div>
           <p class="kicker">Question 2</p>
-          <h2>Technology Alternatives and Trade-Offs #1</h2>
-          <p class="sub">Chosen pair: PostgreSQL vs Cassandra. The practical question is not which one is better overall, but which one fits each workload.</p>
+          <h2>PostgreSQL + Cassandra (Complementary)</h2>
+          <p class="sub">These are not mutually exclusive choices. Reddit-scale architecture usually needs both: SQL for integrity-centric entities and NoSQL for high-volume interaction streams.</p>
         </div>
         <div class="split">
           <table class="matrix">
@@ -671,9 +915,9 @@
                 <td>Horizontal by default across nodes/regions</td>
               </tr>
               <tr>
-                <td>Best fit</td>
-                <td>User accounts, auth, moderation metadata</td>
-                <td>High-volume feed and interaction events</td>
+                <td>Core functionality</td>
+                <td>Users, subreddits, permissions, moderation state, billing/audit</td>
+                <td>Feed events, vote streams, large read/write fan-out timelines</td>
               </tr>
             </tbody>
           </table>
@@ -681,18 +925,18 @@
             <h3>Definitions</h3>
             <p class="small">PostgreSQL is a relational SQL database used for structured data and reliable transactions.</p>
             <p class="small">Cassandra is a distributed NoSQL database built for very large scale and high availability.</p>
-            <h3>PM Recommendation</h3>
+            <h3>How to Apply Each</h3>
             <ul>
-              <li>Use PostgreSQL as system of record for entities requiring integrity and relational joins.</li>
-              <li>Use Cassandra where throughput and uptime under massive traffic spikes dominate.</li>
-              <li>Accept operational complexity of polyglot persistence for better product performance.</li>
+              <li>PostgreSQL: store canonical user/community/post metadata and enforce foreign key relationships.</li>
+              <li>Cassandra: capture high-velocity interaction records used for feed generation and ranking signals.</li>
+              <li>Use both with clear ownership boundaries and synchronization rules between systems.</li>
             </ul>
-            <span class="tag">Trade-off: Simplicity vs Scale</span>
-            <span class="tag">Trade-off: ACID vs Throughput</span>
+            <span class="tag">Design: SQL + NoSQL together</span>
+            <span class="tag">Role split by workload</span>
           </article>
         </div>
         <div class="footer">
-          <span>Alternative Pair 1</span>
+          <span>Complementary Data Strategy</span>
           <span>Q2 • 1/2</span>
         </div>
       </section>
@@ -834,7 +1078,44 @@
         </div>
         <div class="footer">
           <span>Logical schema</span>
-          <span>Q3 • 1/2</span>
+          <span>Q3 • 1/3</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <p class="kicker">Question 3</p>
+          <h2>Table Connections from a Central Table</h2>
+          <p class="sub">The posts table is the central interaction object, with direct foreign-key relationships to users, subreddits, votes, and comments.</p>
+        </div>
+        <div class="relationship-layout">
+          <div class="hub-diagram" aria-label="Central table connection map">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <line x1="50" y1="48" x2="50" y2="21" stroke="#ff7b4d" stroke-width="0.8" stroke-dasharray="1.8 1.4" />
+              <line x1="43" y1="50" x2="20" y2="50" stroke="#ff7b4d" stroke-width="0.8" stroke-dasharray="1.8 1.4" />
+              <line x1="57" y1="50" x2="80" y2="50" stroke="#ff7b4d" stroke-width="0.8" stroke-dasharray="1.8 1.4" />
+              <line x1="50" y1="54" x2="50" y2="79" stroke="#ff7b4d" stroke-width="0.8" stroke-dasharray="1.8 1.4" />
+            </svg>
+            <div class="map-node map-center">posts</div>
+            <div class="map-node map-top">users</div>
+            <div class="map-node map-left">subreddits</div>
+            <div class="map-node map-right">comments</div>
+            <div class="map-node map-bottom">votes</div>
+          </div>
+          <article class="card">
+            <h3>Relationship Keys</h3>
+            <ul>
+              <li>posts.user_id → users.id (author identity)</li>
+              <li>posts.subreddit_id → subreddits.id (community context)</li>
+              <li>votes.post_id → posts.id (engagement scoring)</li>
+              <li>comments.post_id → posts.id (discussion thread)</li>
+            </ul>
+            <p class="map-note">Design reason: centering around posts simplifies query design for feed, ranking, and moderation workflows.</p>
+          </article>
+        </div>
+        <div class="footer">
+          <span>Connection map</span>
+          <span>Q3 • 2/3</span>
         </div>
       </section>
 
@@ -903,7 +1184,7 @@ CREATE TABLE comments (
         </div>
         <div class="footer">
           <span>Implementation-ready DDL</span>
-          <span>Q3 • 2/2</span>
+          <span>Q3 • 3/3</span>
         </div>
       </section>
 
@@ -1085,7 +1366,7 @@ Query Params:
           <div class="arch-arrow" aria-hidden="true"></div>
           <div class="arch-node"><span>Response + Attribution</span></div>
         </div>
-        <div class="vertical-columns" style="margin-top: 10px;">
+        <div class="vertical-columns compact-cards" style="margin-top: 8px;">
           <article class="card">
             <h3>Relevance and Safety</h3>
             <ul>
@@ -1097,9 +1378,9 @@ Query Params:
           <article class="card">
             <h3>Attribution and Revenue</h3>
             <ul>
-              <li>DDG sends click and impression callbacks with request_id.</li>
-              <li>Revenue share is computed in daily settlement jobs.</li>
-              <li>Auditable event logs support dispute resolution.</li>
+              <li>Revenue source split: 60% sponsored-result revenue share, 25% query-volume licensing, 15% premium safety/compliance tier.</li>
+              <li>Settlement math: Net Revenue = (sponsored CPM + licensing fees + premium tier fees) - invalid traffic deductions.</li>
+              <li>DDG callback events (impression, click, conversion) roll into daily settlement with request_id-level audit trails.</li>
             </ul>
           </article>
           <article class="card">
@@ -1139,7 +1420,7 @@ Query Params:
             </ul>
           </article>
           <article class="card">
-            <h3>CTO Takeaway</h3>
+            <h3>Value I bring</h3>
             <ul>
               <li>I bring platform thinking, technical fluency, and a track record of measurable outcomes.</li>
               <li>I would bring that same rigor to Reddit: clear product bets, strong engineering partnership, and execution that scales.</li>
@@ -1155,7 +1436,7 @@ Query Params:
 
     <div class="controls" aria-label="Slide controls">
       <button class="btn" id="prevBtn" aria-label="Previous slide">◀</button>
-      <div class="counter" id="counter">1 / 12</div>
+      <div class="counter" id="counter">1 / 14</div>
       <button class="btn" id="nextBtn" aria-label="Next slide">▶</button>
     </div>
 
