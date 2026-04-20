@@ -1,0 +1,11 @@
+{
+  "name": "macroplate-meal-prep-applications",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix backend run dev",
+    "build": "npm --prefix backend run build",
+    "start": "npm --prefix backend run start",
+    "install:all": "npm --prefix backend install"
+  }
+}
