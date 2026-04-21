@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Macro Nutrition & Meal Prep Seminar — Vamos Health West Valley</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+/* ─── RESET & BASE ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #111; font-family: 'Montserrat', sans-serif; }
+
+/* ─── VARIABLES ────────────────────────────────────────────── */
+:root {
+  --green:   #2E7D32;
+  --green-l: #43A047;
+  --green-d: #1B5E20;
+  --yellow:  #F9A825;
+  --blue:    #0277BD;
+  --blue-l:  #E3F2FD;
+  --red:     #C62828;
+  --white:   #FFFFFF;
+  --off:     #F9FAFB;
+  --gray:    #6B7280;
+  --dark:    #1A1A2E;
+  --text:    #1F2937;
+}
+
+/* ─── SLIDE WRAPPER ────────────────────────────────────────── */
+.deck { width: 100vw; height: 100vh; position: relative; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column; justify-content: center; align-items: center;
+  padding: 60px 80px;
+  opacity: 0; transition: opacity .35s ease;
+  background: var(--white);
+}
+.slide.active { display: flex; opacity: 1; }
+.slide.fade-in { animation: fadeIn .35s ease forwards; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── LAYOUT HELPERS ──────────────────────────────────────── */
+.two-col  { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; width: 100%; align-items: start; }
+.three-col{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; width: 100%; }
+.centered { text-align: center; }
+.full-w   { width: 100%; }
+
+/* ─── TYPOGRAPHY ───────────────────────────────────────────── */
+.eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--green); margin-bottom: 12px;
+}
+h1 { font-size: 52px; font-weight: 900; line-height: 1.1; color: var(--text); }
+h2 { font-size: 38px; font-weight: 800; line-height: 1.2; color: var(--text); margin-bottom: 20px; }
+h3 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+p  { font-size: 17px; font-weight: 400; line-height: 1.7; color: var(--gray); }
+.lead { font-size: 22px; font-weight: 500; color: var(--text); line-height: 1.5; }
+.accent { color: var(--green); }
+.accent-y { color: var(--yellow); }
+.bold { font-weight: 700; color: var(--text); }
+
+/* ─── BULLET LIST ──────────────────────────────────────────── */
+.bullets { list-style: none; width: 100%; }
+.bullets li {
+  padding: 12px 0 12px 36px; position: relative;
+  font-size: 18px; font-weight: 500; color: var(--text); border-bottom: 1px solid #F3F4F6;
+}
+.bullets li::before {
+  content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; border-radius: 50%; background: var(--green);
+}
+.bullets li:last-child { border-bottom: none; }
+.bullets li span { font-weight: 400; color: var(--gray); font-size: 15px; display: block; margin-top: 2px; }
+
+/* ─── COVER SLIDE ──────────────────────────────────────────── */
+.slide-cover {
+  background: linear-gradient(145deg, #1B5E20 0%, #2E7D32 45%, #388E3C 100%);
+  color: white;
+}
+.slide-cover h1 { color: white; font-size: 58px; text-align: center; max-width: 800px; }
+.slide-cover .eyebrow { color: rgba(255,255,255,.75); }
+.slide-cover p { color: rgba(255,255,255,.8); font-size: 20px; text-align: center; max-width: 600px; margin-top: 20px; }
+.cover-logos {
+  display: flex; align-items: center; gap: 28px; margin-bottom: 40px;
+}
+.cover-logo-pill {
+  background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.35);
+  border-radius: 40px; padding: 10px 28px;
+  font-size: 14px; font-weight: 700; color: white; letter-spacing: 1px;
+}
+.cover-divider { width: 1px; height: 36px; background: rgba(255,255,255,.3); }
+.cover-tag {
+  margin-top: 40px; background: var(--yellow); color: #1A1A00;
+  border-radius: 8px; padding: 10px 28px; font-size: 15px; font-weight: 700;
+}
+
+/* ─── SECTION HEADER ────────────────────────────────────────── */
+.slide-section-header {
+  background: linear-gradient(135deg, var(--green-d), var(--green));
+  color: white;
+}
+.slide-section-header h2 { color: white; font-size: 44px; text-align: center; }
+.slide-section-header .eyebrow { color: rgba(255,255,255,.6); text-align: center; margin: 0 auto 16px; }
+.slide-section-header p { color: rgba(255,255,255,.75); text-align: center; max-width: 580px; font-size: 19px; }
+
+/* ─── STAT CARDS ─────────────────────────────────────────────── */
+.stat-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 100%; margin-top: 12px;
+}
+.stat-card {
+  background: var(--off); border-radius: 16px; padding: 28px 20px;
+  text-align: center; border-top: 4px solid var(--green);
+}
+.stat-card.red   { border-top-color: var(--red); }
+.stat-card.yellow{ border-top-color: var(--yellow); }
+.stat-card.blue  { border-top-color: var(--blue); }
+.stat-num { font-size: 42px; font-weight: 900; color: var(--green); line-height: 1; }
+.stat-card.red   .stat-num { color: var(--red); }
+.stat-card.yellow .stat-num { color: #E65100; }
+.stat-card.blue  .stat-num { color: var(--blue); }
+.stat-label { font-size: 13px; font-weight: 600; color: var(--gray); margin-top: 8px; line-height: 1.4; }
+.system-callout {
+  margin-top: 28px; padding: 20px 36px; border-radius: 12px;
+  background: #FFF3E0; border-left: 6px solid #E65100;
+  font-size: 20px; font-weight: 700; color: #BF360C; text-align: center; width: 100%;
+}
+
+/* ─── MACRO CARDS ────────────────────────────────────────────── */
+.macro-card {
+  background: var(--off); border-radius: 20px; padding: 32px 28px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.macro-icon {
+  width: 64px; height: 64px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; margin: 0 auto 16px;
+  font-size: 28px;
+}
+.macro-card h3 { font-size: 20px; }
+.macro-card p { font-size: 15px; }
+.macro-card .macro-tag {
+  display: inline-block; margin-top: 16px; padding: 6px 18px;
+  border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px;
+}
+.carb .macro-icon { background: #FFF9C4; }
+.carb .macro-tag  { background: #FFF176; color: #5D4037; }
+.prot .macro-icon { background: #FCE4EC; }
+.prot .macro-tag  { background: #F48FB1; color: #880E4F; }
+.fat  .macro-icon { background: #E8F5E9; }
+.fat  .macro-tag  { background: #A5D6A7; color: #1B5E20; }
+.control-bar {
+  margin-top: 28px; padding: 18px 32px; border-radius: 12px;
+  background: var(--green); color: white; text-align: center;
+  font-size: 19px; font-weight: 700; width: 100%;
+}
+
+/* ─── MACRO DETAIL SLIDE ──────────────────────────────────────── */
+.detail-box {
+  background: var(--off); border-radius: 16px; padding: 32px;
+}
+.detail-box h3 { font-size: 24px; margin-bottom: 12px; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.pill {
+  padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 700;
+  background: #E8F5E9; color: var(--green-d);
+}
+.pill.yellow { background: #FFF9C4; color: #5D4037; }
+.pill.blue   { background: #E3F2FD; color: #0D47A1; }
+.pill.red    { background: #FFEBEE; color: #B71C1C; }
+.pill.green  { background: #E8F5E9; color: #1B5E20; }
+.tip-box {
+  margin-top: 16px; padding: 16px 20px; border-radius: 12px;
+  background: #E8F5E9; border-left: 4px solid var(--green);
+  font-size: 15px; font-weight: 600; color: var(--green-d);
+}
+
+/* ─── PLATE METHOD ───────────────────────────────────────────── */
+.plate-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.plate-svg-wrap {
+  width: 340px; height: 340px; position: relative;
+}
+.plate-legend {
+  display: flex; flex-direction: column; gap: 8px; width: 100%;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 14px;
+  font-size: 16px; font-weight: 600; color: var(--text);
+}
+.legend-dot {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+}
+.legend-item span { font-weight: 400; color: var(--gray); font-size: 14px; }
+.bilingual-tag {
+  font-size: 12px; color: var(--green); font-weight: 700;
+  background: #E8F5E9; padding: 3px 12px; border-radius: 20px; margin-left: auto;
+}
+
+/* ─── WHY HARD CARDS ─────────────────────────────────────────── */
+.barrier-card {
+  background: var(--off); border-radius: 16px; padding: 24px;
+  border-left: 5px solid var(--green);
+}
+.barrier-card .b-icon { font-size: 32px; margin-bottom: 10px; }
+.barrier-card h3 { font-size: 18px; margin-bottom: 6px; }
+.barrier-card p { font-size: 14px; }
+
+/* ─── PIVOT SLIDE ────────────────────────────────────────────── */
+.pivot-row {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; width: 100%;
+}
+.pivot-col { background: var(--off); border-radius: 16px; padding: 28px; }
+.pivot-col h3 { font-size: 17px; margin-bottom: 14px; }
+.pivot-col ul { list-style: none; }
+.pivot-col ul li { font-size: 15px; padding: 6px 0; color: var(--gray); border-bottom: 1px solid #E5E7EB; }
+.pivot-col ul li:last-child { border-bottom: none; }
+.pivot-col ul li::before { content: '✗ '; color: var(--red); font-weight: 700; }
+.pivot-col.good ul li::before { content: '✓ '; color: var(--green); }
+.pivot-vs {
+  font-size: 28px; font-weight: 900; color: var(--green);
+  text-align: center;
+}
+
+/* ─── COACHING SLIDE ─────────────────────────────────────────── */
+.step-row { display: flex; gap: 0; width: 100%; }
+.step {
+  flex: 1; position: relative;
+  background: var(--off); padding: 32px 24px; text-align: center;
+}
+.step:not(:last-child)::after {
+  content: '→'; position: absolute; right: -14px; top: 50%;
+  transform: translateY(-50%); font-size: 24px; color: var(--green);
+  font-weight: 900; z-index: 10; background: white; padding: 4px;
+}
+.step-num {
+  width: 48px; height: 48px; border-radius: 50%; background: var(--green);
+  color: white; font-size: 20px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;
+}
+.step h3 { font-size: 17px; }
+.step p { font-size: 14px; }
+
+/* ─── WHAT IF SLIDE ──────────────────────────────────────────── */
+.what-if-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px; width: 100%;
+}
+.what-if-card {
+  border-radius: 20px; padding: 36px 32px;
+  text-align: center;
+}
+.what-if-card.green { background: linear-gradient(135deg, var(--green-d), var(--green)); }
+.what-if-card.yellow { background: linear-gradient(135deg, #E65100, #F9A825); }
+.what-if-card h3 { font-size: 22px; font-weight: 700; color: white; line-height: 1.4; }
+.what-if-card p  { color: rgba(255,255,255,.8); font-size: 15px; margin-top: 10px; }
+
+/* ─── HOW IT WORKS ───────────────────────────────────────────── */
+.how-card {
+  background: var(--off); border-radius: 20px; padding: 36px 24px;
+  text-align: center; position: relative;
+}
+.how-icon {
+  font-size: 48px; margin-bottom: 16px;
+}
+.how-badge {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  background: var(--green); color: white; font-size: 12px; font-weight: 700;
+  padding: 4px 18px; border-radius: 20px; letter-spacing: 1px;
+}
+
+/* ─── CTA SLIDE ──────────────────────────────────────────────── */
+.slide-cta {
+  background: linear-gradient(160deg, #1B5E20, #2E7D32 50%, #F9A825 200%);
+}
+.slide-cta h2 { color: white; text-align: center; font-size: 44px; }
+.slide-cta .eyebrow { color: rgba(255,255,255,.65); text-align: center; }
+.cta-options {
+  display: flex; gap: 24px; width: 100%; margin-top: 32px;
+}
+.cta-btn {
+  flex: 1; padding: 24px; border-radius: 16px;
+  text-align: center; background: rgba(255,255,255,.12);
+  border: 2px solid rgba(255,255,255,.3); cursor: pointer;
+  transition: background .2s;
+}
+.cta-btn:hover { background: rgba(255,255,255,.22); }
+.cta-btn .b-icon { font-size: 36px; margin-bottom: 10px; }
+.cta-btn h3 { font-size: 18px; color: white; }
+.cta-btn p  { font-size: 13px; color: rgba(255,255,255,.7); margin-top: 6px; }
+.cta-btn.primary { background: var(--yellow); border-color: var(--yellow); }
+.cta-btn.primary h3 { color: #1A1A00; }
+.cta-btn.primary p  { color: #5D4037; }
+.cta-tagline {
+  margin-top: 32px; font-size: 22px; font-weight: 700; color: white; text-align: center;
+  font-style: italic;
+}
+
+/* ─── STORY / TESTIMONIAL ─────────────────────────────────────── */
+.story-card {
+  background: var(--off); border-radius: 20px; padding: 40px 48px;
+  border-left: 8px solid var(--green); width: 100%; max-width: 780px;
+  position: relative;
+}
+.quote-mark { font-size: 80px; color: var(--green); line-height: .6; margin-bottom: 12px; font-family: Georgia, serif; }
+.story-card blockquote { font-size: 20px; font-style: italic; color: var(--text); line-height: 1.6; }
+.story-attr { margin-top: 20px; font-size: 14px; font-weight: 700; color: var(--gray); }
+
+/* ─── SPANISH PLATE ───────────────────────────────────────────── */
+.bilingual-header {
+  display: flex; align-items: center; gap: 20px; margin-bottom: 24px;
+}
+.lang-badge {
+  padding: 6px 20px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px;
+}
+.lang-badge.en { background: #E3F2FD; color: #0D47A1; }
+.lang-badge.es { background: #FCE4EC; color: #880E4F; }
+
+/* ─── PROGRESS BAR ────────────────────────────────────────────── */
+.progress-bar {
+  position: fixed; bottom: 0; left: 0; width: 100%; height: 4px;
+  background: rgba(0,0,0,.1); z-index: 100;
+}
+.progress-fill {
+  height: 100%; background: var(--green);
+  transition: width .35s ease;
+}
+
+/* ─── SLIDE COUNTER ───────────────────────────────────────────── */
+.counter {
+  position: fixed; bottom: 14px; right: 24px;
+  font-size: 12px; font-weight: 600; color: rgba(0,0,0,.4);
+  z-index: 100;
+}
+.counter .cn { color: var(--green); font-weight: 800; }
+
+/* ─── SPEAKER NOTES PANEL ──────────────────────────────────────── */
+.notes-panel {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 0;
+  background: #1E2A1E; color: #A5D6A7;
+  overflow: hidden; transition: height .3s ease; z-index: 200;
+  font-family: 'Montserrat', sans-serif;
+}
+.notes-panel.open { height: 220px; }
+.notes-inner { padding: 20px 40px; overflow-y: auto; height: 100%; }
+.notes-inner .notes-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px; color: #81C784; margin-bottom: 10px;
+}
+.notes-inner p { font-size: 14px; line-height: 1.8; color: #C8E6C9; }
+.notes-inner .pause { color: var(--yellow); font-weight: 700; }
+.notes-inner .emotion { color: #80CBC4; font-weight: 600; }
+
+.notes-toggle {
+  position: fixed; bottom: 12px; left: 24px;
+  background: rgba(0,0,0,.15); border: none; border-radius: 20px;
+  padding: 6px 16px; font-size: 11px; font-weight: 700; color: rgba(0,0,0,.5);
+  cursor: pointer; z-index: 201; letter-spacing: 1px; font-family: 'Montserrat', sans-serif;
+}
+
+/* ─── VAMOS BADGE ─────────────────────────────────────────────── */
+.vamos-badge {
+  position: fixed; top: 20px; right: 28px;
+  background: white; border-radius: 12px; padding: 8px 18px;
+  font-size: 10px; font-weight: 800; letter-spacing: 2px; color: var(--green);
+  box-shadow: 0 2px 12px rgba(0,0,0,.08); z-index: 100;
+  border: 1.5px solid #E8F5E9;
+}
+.slide-cover .vamos-badge,
+.slide-section-header .vamos-badge { display: none; }
+
+/* ─── CONFUSION WALL ──────────────────────────────────────────── */
+.confusion-wall {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: 100%;
+}
+.confusion-tag {
+  padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: 600;
+  background: var(--off);
+  border: 1.5px solid #E5E7EB; color: var(--text);
+  opacity: .65;
+  animation: floatIn 0s ease forwards;
+}
+.confusion-tag:nth-child(odd)  { transform: rotate(-1deg); }
+.confusion-tag:nth-child(even) { transform: rotate(.8deg); }
+.confusion-callout {
+  margin-top: 28px; padding: 18px 32px; border-radius: 12px;
+  background: #FFF3E0; border-left: 5px solid #F9A825;
+  font-size: 18px; font-weight: 700; color: #BF360C; text-align: center; width: 100%;
+}
+
+/* ─── BRAND STRIP ─────────────────────────────────────────────── */
+.brand-strip {
+  position: fixed; top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(to right, var(--green), var(--yellow));
+  z-index: 200;
+}
+
+/* ─── NAV ARROWS ──────────────────────────────────────────────── */
+.nav-prev, .nav-next {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,.07); border: none; border-radius: 50%;
+  width: 44px; height: 44px; font-size: 18px; color: rgba(0,0,0,.3);
+  cursor: pointer; z-index: 100; transition: background .2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-prev:hover, .nav-next:hover { background: rgba(0,0,0,.14); color: var(--green); }
+.nav-prev { left: 16px; }
+.nav-next { right: 16px; }
+
+/* ─── SECTION BADGE ──────────────────────────────────────────── */
+.section-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #E8F5E9; border-radius: 20px; padding: 6px 18px;
+  font-size: 12px; font-weight: 700; color: var(--green); letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+/* ─── HIGHLIGHT TEXT ─────────────────────────────────────────── */
+.hl { background: #FFF9C4; padding: 2px 6px; border-radius: 4px; color: #5D4037; }
+
+/* ─── OFFER BOX ──────────────────────────────────────────────── */
+.offer-box {
+  background: white; border-radius: 20px; overflow: hidden; width: 100%; box-shadow: 0 4px 30px rgba(0,0,0,.15);
+}
+.offer-header {
+  background: var(--yellow); padding: 20px 32px; text-align: center;
+  font-size: 22px; font-weight: 800; color: #1A1A00;
+}
+.offer-body {
+  padding: 28px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+}
+.offer-item {
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.offer-check {
+  min-width: 28px; height: 28px; border-radius: 50%; background: var(--green);
+  color: white; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.offer-item p { font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.4; }
+.offer-item span { font-weight: 400; color: var(--gray); font-size: 14px; }
+.offer-footer {
+  background: #F9FAFB; padding: 20px 32px; text-align: center; border-top: 1px solid #E5E7EB;
+  font-size: 20px; font-weight: 700; color: var(--text);
+}
+
+/* ─── COMMUNITY SLIDE ─────────────────────────────────────────── */
+.community-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%;
+}
+.community-card {
+  background: var(--off); border-radius: 16px; padding: 24px 28px;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.community-card .c-icon { font-size: 36px; flex-shrink: 0; }
+.community-card h3 { font-size: 17px; margin-bottom: 4px; }
+.community-card p { font-size: 14px; }
+
+/* ─── RESPONSIVE HELPER ──────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .slide { padding: 40px; }
+  h1 { font-size: 40px; }
+  h2 { font-size: 30px; }
+  .stat-grid { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="brand-strip"></div>
+<div class="vamos-badge">VAMOS HEALTH × MACROPLATE</div>
+
+<div class="deck" id="deck">
+
+<!-- ══════════════════════════════════
+     SLIDE 1 — COVER
+════════════════════════════════════ -->
+<div class="slide slide-cover active fade-in" data-notes="Welcome everyone and thank the clinic for hosting. Introduce yourself warmly — name, role, how long you've been in nutrition/meal prep. Say: 'Tonight is not a diet talk. We're not here to count calories or shame anyone's choices. We're here to finally make sense of food — and to show you the simplest possible path to feeling better.' PAUSE. Let the room settle. Make eye contact. This first impression sets the whole tone.">
+
+  <div class="cover-logos">
+    <div class="cover-logo-pill">VAMOS HEALTH</div>
+    <div class="cover-divider"></div>
+    <div class="cover-logo-pill">MACROPLATE MEAL PREP</div>
+  </div>
+
+  <div class="eyebrow centered">West Valley City, Utah · Community Seminar</div>
+  <h1 class="centered">Fuel Your Life:<br/>Macros, Meals & Real Results</h1>
+  <p>A practical guide to nutrition, chronic disease prevention,<br/>and making healthy eating actually work.</p>
+  <div class="cover-tag">📅 Presented at Vamos Health West Valley</div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 2 — FOOD AS FUEL
+════════════════════════════════════ -->
+<div class="slide" data-notes="Open with empathy: 'Before we talk about food, I want you to do one thing — release any guilt you've been carrying about what you ate last week, last month, or last year. That is not what we're about tonight.' EMOTION: Lean in. Speak slowly. Many people in the audience have tried and 'failed' multiple times. This slide is permission to start fresh. PAUSE after 'sustainability > dieting.' Ask the room: 'Who here has been told to just eat less and move more? How'd that work out?' Let them laugh. Build rapport.">
+
+  <div class="two-col">
+    <div>
+      <div class="eyebrow">Slide 1 of 15</div>
+      <h2>Food Is <span class="accent">Fuel</span> — Not the Enemy</h2>
+      <p class="lead" style="margin-bottom:24px">The goal tonight isn't a diet.<br/>It's a <strong>sustainable system</strong>.</p>
+      <ul class="bullets">
+        <li>Food provides energy, structure, and healing
+          <span>Every meal is information for your body</span>
+        </li>
+        <li>Dieting = restriction → Fueling = empowerment
+          <span>Language matters — we're building a relationship, not a punishment</span>
+        </li>
+        <li>Sustainability always beats short-term perfection
+          <span>The best plan is the one you can actually keep</span>
+        </li>
+        <li>You deserve to feel good in your body — every day
+          <span>Energy, sleep, mood — food affects all of it</span>
+        </li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;justify-content:center;">
+      <div style="background:#E8F5E9;border-radius:20px;padding:32px;text-align:center;">
+        <div style="font-size:56px;margin-bottom:12px;">🥦</div>
+        <p style="font-size:20px;font-weight:700;color:var(--green-d);">"You don't need to be perfect.<br/>You need to be consistent."</p>
+      </div>
+      <div style="background:#FFF9C4;border-radius:14px;padding:20px 24px;">
+        <p style="font-size:15px;font-weight:600;color:#5D4037;">Tonight's promise: Simple, real, actionable. No jargon. No guilt. Just clarity.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 3 — WHY NUTRITION FEELS CONFUSING
+════════════════════════════════════ -->
+<div class="slide" data-notes="Build common ground. Ask: 'How many of you have heard completely opposite advice about the same food?' Raise your own hand first. The confusion wall is intentional — show it, let the room read it, then say: 'This is what we're all swimming in. It's overwhelming by design.' PAUSE. 'But here's what most of these systems have in common — they ignore how real people actually live.' Transition: 'Tonight we're cutting through all of this.' This is where you position yourself as their guide, not another talking head adding noise.">
+
+  <div class="eyebrow centered">Slide 2 of 15</div>
+  <h2 class="centered">Why Nutrition Feels So <span class="accent">Confusing</span></h2>
+  <div class="confusion-wall" style="margin-top:16px;">
+    <div class="confusion-tag">Keto</div>
+    <div class="confusion-tag">Vegan</div>
+    <div class="confusion-tag">Intermittent Fasting</div>
+    <div class="confusion-tag">Low-Fat</div>
+    <div class="confusion-tag">Paleo</div>
+    <div class="confusion-tag">Carnivore</div>
+    <div class="confusion-tag">Whole30</div>
+    <div class="confusion-tag">IIFYM</div>
+    <div class="confusion-tag">Anti-Inflammatory</div>
+    <div class="confusion-tag">Gluten-Free</div>
+    <div class="confusion-tag">Mediterranean</div>
+    <div class="confusion-tag">Low-Carb</div>
+    <div class="confusion-tag">High-Protein</div>
+    <div class="confusion-tag">Clean Eating</div>
+    <div class="confusion-tag">Detox Diets</div>
+  </div>
+  <div class="confusion-callout">
+    ⚠️ Conflicting advice isn't your fault — it's the system. You are not the problem.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 4 — THE REAL PROBLEM
+════════════════════════════════════ -->
+<div class="slide" data-notes="This is the emotional core of the first half. Read the stats slowly. PAUSE between each number. Let them land. Then ask: 'Does anyone recognize someone in these numbers? A parent? A sibling? Yourself?' EMOTION: Let the room sit with it for 5 seconds. Then pivot: 'These are not lazy people. These are not people who don't care. These are people who were never given a system that worked in real life.' The headline is the key message — point to it, say it slowly, let them write it down if they want. This is your villain: the broken food environment, not the individual.">
+
+  <div class="eyebrow centered">Slide 3 of 15 · The Real Problem</div>
+  <h2 class="centered">Chronic Disease Is a <span class="accent">System Problem</span></h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-num">6 in 10</div>
+      <div class="stat-label">Americans have at least one chronic disease</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-num">4 in 10</div>
+      <div class="stat-label">Live with two or more chronic conditions</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-num">40%+</div>
+      <div class="stat-label">Obesity rate — highest in U.S. history</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-num">90%</div>
+      <div class="stat-label">Of $4.1 trillion healthcare spend linked to chronic disease</div>
+    </div>
+  </div>
+  <div class="system-callout">
+    "This is not a willpower problem. It's a system problem."
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 5 — WHAT ARE MACROS?
+════════════════════════════════════ -->
+<div class="slide" data-notes="This is the education pivot. Tone shifts from empathy to empowerment. Say: 'Okay — so if the system is broken, what do WE do? We start with the basics. The stuff nobody ever properly explained.' Walk through each macro simply. Use your hands: 'Carbs — energy. Protein — structure. Fat — hormones.' Repeat it. Ask the audience to repeat it back. Make it memorable. PAUSE after 'Understanding macros turns confusion into control.' That's your core thesis. Write it on the whiteboard if you have one.">
+
+  <div class="eyebrow centered">Slide 4 of 15 · Macro Foundations</div>
+  <h2 class="centered">What Are <span class="accent">Macronutrients</span>?</h2>
+  <div class="three-col" style="margin-top: 12px;">
+    <div class="macro-card carb">
+      <div class="macro-icon">🌾</div>
+      <h3>Carbohydrates</h3>
+      <p>Your body's primary energy source. Fuels brain, muscles, and daily activity.</p>
+      <div class="macro-tag">ENERGY</div>
+    </div>
+    <div class="macro-card prot">
+      <div class="macro-icon">🥩</div>
+      <h3>Protein</h3>
+      <p>Builds, repairs, and maintains every cell. Supports lean muscle and metabolism.</p>
+      <div class="macro-tag">STRUCTURE</div>
+    </div>
+    <div class="macro-card fat">
+      <div class="macro-icon">🥑</div>
+      <h3>Fats</h3>
+      <p>Essential for hormone production, brain health, and absorbing key vitamins.</p>
+      <div class="macro-tag">HORMONES</div>
+    </div>
+  </div>
+  <div class="control-bar">
+    💡 "Understanding macros turns confusion into control."
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 6 — CARBOHYDRATES
+════════════════════════════════════ -->
+<div class="slide" data-notes="Acknowledge the fear first: 'I know — carbs got a bad reputation. Low-carb worked for some people. But the issue was never carbs. The issue was the type.' PAUSE. 'White bread and vegetables are both carbohydrates. That's like saying a bicycle and a motorcycle are both vehicles — true, but not the same.' Then explain fiber: 'Fiber is the cheat code. It slows absorption, feeds your gut, and keeps you full longer.' Mention that many in the West Valley community eat tortillas, rice, beans — all fine when balanced correctly. This is a cultural bridge moment.">
+
+  <div class="two-col">
+    <div>
+      <div class="section-badge">🌾 Slide 5 of 15 · Carbohydrates</div>
+      <h2>Carbs Are Not <span class="accent">the Enemy</span></h2>
+      <div class="detail-box">
+        <h3>Simple Carbs <span style="font-weight:400;color:var(--gray);font-size:15px;">— Fast energy, quick spike</span></h3>
+        <div class="pill-row">
+          <span class="pill yellow">White bread</span>
+          <span class="pill yellow">Soda</span>
+          <span class="pill yellow">Candy</span>
+          <span class="pill yellow">Juice</span>
+        </div>
+        <h3 style="margin-top:16px;">Complex Carbs <span style="font-weight:400;color:var(--gray);font-size:15px;">— Sustained energy</span></h3>
+        <div class="pill-row">
+          <span class="pill green">Rice</span>
+          <span class="pill green">Beans</span>
+          <span class="pill green">Sweet Potato</span>
+          <span class="pill green">Oats</span>
+          <span class="pill green">Tortillas</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px;justify-content:center;">
+      <div style="background:#F1F8E9;border-radius:20px;padding:32px;text-align:center;border:2px solid #AED581;">
+        <div style="font-size:42px;margin-bottom:12px;">🌿</div>
+        <h3 style="color:#33691E;font-size:20px;">Fiber Is the Cheat Code</h3>
+        <p style="font-size:15px;margin-top:8px;">Slows sugar absorption · Feeds gut bacteria<br/>Keeps you full longer · Reduces cravings</p>
+      </div>
+      <div class="tip-box">
+        ✅ Aim for 25–35g of fiber daily. Most people get less than 10g.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 7 — FATS
+════════════════════════════════════ -->
+<div class="slide" data-notes="Another fear to dissolve. 'Fat doesn't make you fat. That was a 1980s marketing myth from the sugar industry.' PAUSE — let that land. 'Every hormone in your body is built from fat. Every cell membrane. Your brain is 60% fat.' Then differentiate: 'We're not talking about trans fats in processed food — we're talking about the fats your grandmother cooked with.' Practical tip: avocado, olive oil, nuts, salmon. EMOTION: Ask, 'How many people were told to eat low-fat yogurt and wonder why they were still hungry?' It's a shared experience.">
+
+  <div class="two-col">
+    <div>
+      <div class="section-badge">🥑 Slide 6 of 15 · Fats</div>
+      <h2>Fat Is <span class="accent">Essential</span> — Not Evil</h2>
+      <ul class="bullets">
+        <li>Every hormone in your body is built from fat
+          <span>Testosterone, estrogen, cortisol — all require dietary fat</span>
+        </li>
+        <li>Your brain is 60% fat — it needs to be fed
+          <span>Low-fat diets linked to brain fog, mood swings, depression</span>
+        </li>
+        <li>Fat absorbs vitamins A, D, E, K
+          <span>Remove fat = block key nutrients</span>
+        </li>
+        <li>The real culprit: trans fats, not natural fats
+          <span>Avoid: partially hydrogenated oils</span>
+        </li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;justify-content:center;">
+      <div style="background:var(--off);border-radius:20px;padding:28px;">
+        <p style="font-weight:700;color:var(--green-d);font-size:14px;letter-spacing:2px;margin-bottom:14px;">✅ EAT MORE OF THESE</p>
+        <div class="pill-row">
+          <span class="pill green">Avocado</span>
+          <span class="pill green">Olive Oil</span>
+          <span class="pill green">Salmon</span>
+          <span class="pill green">Nuts</span>
+          <span class="pill green">Eggs</span>
+          <span class="pill green">Chia Seeds</span>
+        </div>
+        <p style="font-weight:700;color:var(--red);font-size:14px;letter-spacing:2px;margin:16px 0 14px;">⚠️ MINIMIZE THESE</p>
+        <div class="pill-row">
+          <span class="pill red">Fried Fast Food</span>
+          <span class="pill red">Margarine</span>
+          <span class="pill red">Packaged Snacks</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 8 — PROTEIN
+════════════════════════════════════ -->
+<div class="slide" data-notes="Protein is usually the least controversial macro — people understand muscle = protein. Elevate the message: 'Protein isn't just for gym people. It's for anyone who wants to maintain their metabolism, keep lean mass as they age, and stay full between meals.' PAUSE. 'The key isn't eating a ton of protein. The key is spreading it across all three meals.' Practical: breakfast is where most people fail. Eggs, Greek yogurt, cottage cheese, plant-based options. Mention: 'Your body can only use about 30–40g per sitting — so don't cram it all at dinner.'">
+
+  <div class="two-col">
+    <div>
+      <div class="section-badge">🥩 Slide 7 of 15 · Protein</div>
+      <h2>Protein: <span class="accent">Consistency</span> Matters Most</h2>
+      <ul class="bullets">
+        <li>Repairs muscle, supports metabolism, keeps you full
+          <span>The most satiating macronutrient per calorie</span>
+        </li>
+        <li>Spread protein across all 3 meals
+          <span>Your body absorbs ~30–40g at a time effectively</span>
+        </li>
+        <li>Most people skip protein at breakfast
+          <span>This sets up energy crashes and cravings by noon</span>
+        </li>
+        <li>Plant sources count — you don't need meat every meal
+          <span>Beans, lentils, tofu, Greek yogurt, cottage cheese</span>
+        </li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;justify-content:center;">
+      <div style="background:var(--off);border-radius:20px;padding:28px;">
+        <p style="font-weight:700;color:var(--gray);font-size:13px;letter-spacing:2px;margin-bottom:16px;">DAILY PROTEIN TARGETS</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #E5E7EB;">
+            <span style="font-weight:600;font-size:15px;">Sedentary adults</span>
+            <span style="background:#E8F5E9;color:var(--green-d);font-weight:700;padding:4px 14px;border-radius:20px;font-size:14px;">0.8g/kg</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #E5E7EB;">
+            <span style="font-weight:600;font-size:15px;">Active adults</span>
+            <span style="background:#FFF9C4;color:#5D4037;font-weight:700;padding:4px 14px;border-radius:20px;font-size:14px;">1.2–1.6g/kg</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+            <span style="font-weight:600;font-size:15px;">Weight loss / muscle retention</span>
+            <span style="background:#FCE4EC;color:#880E4F;font-weight:700;padding:4px 14px;border-radius:20px;font-size:14px;">1.6–2.2g/kg</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 9 — THE PLATE METHOD
+════════════════════════════════════ -->
+<div class="slide" data-notes="This is the visual anchor slide — the one people will remember and take home. Walk through the plate method slowly and clearly using the ADA model. 'Half your plate — vegetables. Not side salad, half the plate.' Then: 'A quarter protein. A quarter complex carb.' For bilingual audiences, reference the labels in both languages. Make it practical: 'This works at a restaurant, at home, at a family gathering. You don't need to count a single calorie.' Pause: 'This alone, done consistently, is enough to change most people's health outcomes.'">
+
+  <div class="two-col">
+    <div class="plate-wrap">
+      <div class="section-badge">🍽️ Slide 8 of 15 · Balanced Plates</div>
+      <!-- SVG PLATE METHOD -->
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" style="width:280px;height:280px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.12));">
+        <!-- Plate background -->
+        <circle cx="150" cy="150" r="145" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="3"/>
+        <!-- Half vegetables (left) = 180° arc -->
+        <path d="M150,150 L5,150 A145,145 0 0,1 295,150 Z" fill="#4CAF50" opacity=".85"/>
+        <!-- Quarter protein (top right) -->
+        <path d="M150,150 L295,150 A145,145 0 0,1 150,5 Z" fill="#EF5350" opacity=".85"/>
+        <!-- Quarter carbs (bottom right) -->
+        <path d="M150,150 L150,5 A145,145 0 0,1 295,150 Z" fill="#FFB300" opacity=".85"/>
+        <!-- Dividers -->
+        <line x1="150" y1="5" x2="150" y2="295" stroke="white" stroke-width="3"/>
+        <line x1="5" y1="150" x2="295" y2="150" stroke="white" stroke-width="3"/>
+        <!-- Labels -->
+        <text x="82" y="155" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="800" font-size="13" fill="white">½ VEGETABLES</text>
+        <text x="82" y="172" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="600" font-size="10" fill="rgba(255,255,255,.85)">Verduras</text>
+        <text x="228" y="105" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="800" font-size="11" fill="white">¼ PROTEIN</text>
+        <text x="228" y="120" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="600" font-size="9" fill="rgba(255,255,255,.85)">Proteína</text>
+        <text x="228" y="205" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="800" font-size="11" fill="white">¼ CARBS</text>
+        <text x="228" y="220" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="600" font-size="9" fill="rgba(255,255,255,.85)">Carbohidratos</text>
+        <!-- Rim -->
+        <circle cx="150" cy="150" r="145" fill="none" stroke="#BDBDBD" stroke-width="6"/>
+        <circle cx="150" cy="150" r="139" fill="none" stroke="white" stroke-width="3"/>
+      </svg>
+      <div class="bilingual-header" style="justify-content:center;margin-top:8px;">
+        <span class="lang-badge en">English</span>
+        <span class="lang-badge es">Español</span>
+        <span style="font-size:12px;color:var(--gray);font-weight:600;">Bilingual Labels</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;justify-content:center;">
+      <h2 style="margin-bottom:4px;">Build a <span class="accent">Balanced Plate</span></h2>
+      <div class="plate-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#4CAF50;"></div>
+          <div>
+            <strong>½ Vegetables</strong> — Verduras
+            <span>Broccoli, spinach, bell peppers, nopales, zucchini</span>
+          </div>
+          <div class="bilingual-tag">50%</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#EF5350;"></div>
+          <div>
+            <strong>¼ Protein</strong> — Proteína
+            <span>Chicken, fish, beans, eggs, tofu, carne asada (lean)</span>
+          </div>
+          <div class="bilingual-tag">25%</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#FFB300;"></div>
+          <div>
+            <strong>¼ Complex Carb</strong> — Carbohidratos
+            <span>Rice, tortillas, sweet potato, beans, oats, quinoa</span>
+          </div>
+          <div class="bilingual-tag">25%</div>
+        </div>
+      </div>
+      <div class="tip-box">
+        🌟 This works at home, a restaurant, or a family cookout. No counting required.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 10 — WHY THIS IS HARD
+════════════════════════════════════ -->
+<div class="slide" data-notes="This slide creates the 'yes, exactly!' moment. Go through each barrier and ask: 'Who here has felt this?' Raise your hand, invite the room to. This builds massive credibility. PAUSE at 'decision fatigue.' Explain: 'By 6pm you've made 200 decisions. Nobody wants to think about chicken. That's not weakness. That's human biology.' EMOTION: Be real. Speak from experience or a client story. 'I've seen the most motivated people fall off track not because they stopped caring, but because the environment made it too hard to do the right thing.' The goal is for them to feel deeply understood — then you reveal the solution on the next slide.">
+
+  <div class="eyebrow centered">Slide 9 of 15 · Real Barriers</div>
+  <h2 class="centered">Here's Why This Is <span class="accent">Actually Hard</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;margin-top:16px;">
+    <div class="barrier-card">
+      <div class="b-icon">⏱️</div>
+      <h3>Time Scarcity</h3>
+      <p>Work, family, commute. Real people don't have 2 hours to cook every day. Meal planning feels like another job.</p>
+    </div>
+    <div class="barrier-card" style="border-left-color:var(--yellow);">
+      <div class="b-icon">🧠</div>
+      <h3>Decision Fatigue</h3>
+      <p>After 200+ decisions a day, nobody wants to figure out dinner. Willpower is a limited resource. Environment wins.</p>
+    </div>
+    <div class="barrier-card" style="border-left-color:var(--blue);">
+      <div class="b-icon">🏪</div>
+      <h3>Processed Food Environment</h3>
+      <p>Fast, cheap, hyper-palatable food is everywhere. The system is designed to work against you.</p>
+    </div>
+    <div class="barrier-card" style="border-left-color:var(--red);">
+      <div class="b-icon">🏷️</div>
+      <h3>Confusing Food Labels</h3>
+      <p>"Low fat," "whole grain," "natural" — terms engineered to mislead, not inform.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 11 — WHY MEAL PREP WORKS (PIVOT)
+════════════════════════════════════ -->
+<div class="slide" data-notes="This is your soft pivot. Do NOT pitch yet. Frame it as the logical conclusion of what you just explained. 'So if the barriers are time, decisions, and environment — what's the solution? Remove the barriers.' Show the comparison side by side. Say: 'Meal prep doesn't mean you cook on Sundays for 4 hours. It means having the right food accessible when you need it.' PAUSE. 'The soft sell is already in the room: We handle the hard part so you can focus on the habit.' Say this slowly. Let it sit. Don't explain it further — let them connect the dots.">
+
+  <div class="eyebrow centered">Slide 10 of 15 · The Solution</div>
+  <h2 class="centered">Why <span class="accent">Meal Prep</span> Actually Works</h2>
+  <div class="pivot-row" style="margin-top:16px;">
+    <div class="pivot-col">
+      <h3 style="color:var(--red);">❌ Without Structure</h3>
+      <ul>
+        <li>Decide what to eat 3× a day</li>
+        <li>Last-minute fast food choices</li>
+        <li>Portion sizes drift</li>
+        <li>Inconsistent macros</li>
+        <li>Guilt → all-or-nothing cycle</li>
+      </ul>
+    </div>
+    <div class="pivot-vs">→<br/>VS<br/>←</div>
+    <div class="pivot-col good">
+      <h3 style="color:var(--green);">✅ With Meal Prep</h3>
+      <ul>
+        <li>Decisions made once a week</li>
+        <li>Right food always accessible</li>
+        <li>Portions pre-controlled</li>
+        <li>Macros balanced consistently</li>
+        <li>Momentum → habit loop forms</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:24px;padding:18px 32px;background:var(--green);border-radius:12px;text-align:center;">
+    <p style="color:white;font-size:18px;font-weight:700;">"We handle the hard part so you can focus on the habit."</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 12 — COACHING + MEALS = RESULTS
+════════════════════════════════════ -->
+<div class="slide" data-notes="Elevate the value proposition. 'Meal prep alone is powerful. Coaching alone is valuable. Together, they close the gap between knowing and doing.' Walk through the three pillars: Education, Execution, Accountability. Ask: 'Has anyone ever known what to do but still not done it?' Everyone raises their hand. 'That's accountability. That's what a coach provides.' Then: 'And execution — the actual meals — that's where most people fall down. We remove that barrier entirely.' LOGIC appeal here, but close with emotion: 'When both pieces are in place, results stop being accidental and start being inevitable.'">
+
+  <div class="two-col">
+    <div>
+      <div class="section-badge">🎯 Slide 11 of 15 · Coaching Impact</div>
+      <h2>Coaching + Meals <span class="accent">= Results</span></h2>
+      <p class="lead" style="margin-bottom:24px;">Knowledge without execution is just information.</p>
+      <ul class="bullets">
+        <li>Education — you know your macros
+          <span>Understanding becomes instinct over time</span>
+        </li>
+        <li>Execution — meals are already done
+          <span>No prep, no planning, no guessing</span>
+        </li>
+        <li>Accountability — someone in your corner
+          <span>Check-ins, adjustments, real-time support</span>
+        </li>
+        <li>Personalization — not a one-size plan
+          <span>Goals, preferences, dietary needs, lifestyle</span>
+        </li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;justify-content:center;">
+      <div style="background:linear-gradient(135deg,var(--green-d),var(--green));border-radius:20px;padding:36px;text-align:center;color:white;">
+        <div style="font-size:48px;margin-bottom:16px;">🏆</div>
+        <p style="font-size:18px;font-weight:700;line-height:1.5;">"When education meets execution, results stop being accidental."</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 13 — WHAT IF…
+════════════════════════════════════ -->
+<div class="slide" data-notes="This is the imagination slide — pure realization-based selling. Speak slowly. Pause between each question. Don't answer them. Ask the room: 'What would that feel like?' Ask one person directly if comfortable. EMOTION: 'What if your biggest barrier just... wasn't there anymore?' The goal is for people to visualize their own life being easier, healthier, more consistent. Let that visualization do the selling for you. The less you sell, the more they buy. Close the slide by saying: 'We actually have a system that answers all of these questions. Let me show you.'">
+
+  <div class="eyebrow centered">Slide 12 of 15 · Imagine This</div>
+  <h2 class="centered">"What If…?"</h2>
+  <div class="what-if-grid" style="margin-top:20px;">
+    <div class="what-if-card green">
+      <h3>"What if your meals were already done every morning?"</h3>
+      <p>No decision, no prep, no guessing — just heat and eat.</p>
+    </div>
+    <div class="what-if-card yellow">
+      <h3>"What if you never had to think about macros again?"</h3>
+      <p>Every meal is already balanced. You just show up and live your life.</p>
+    </div>
+    <div class="what-if-card" style="background:linear-gradient(135deg,#0277BD,#29B6F6);">
+      <h3>"What if eating healthy was easier than eating poorly?"</h3>
+      <p>That's not a fantasy — it's what a real system produces.</p>
+    </div>
+    <div class="what-if-card" style="background:linear-gradient(135deg,#4A148C,#7B1FA2);">
+      <h3>"What if consistency finally felt automatic?"</h3>
+      <p>Habits don't need motivation when your environment supports them.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 14 — HOW MACROPLATE WORKS
+════════════════════════════════════ -->
+<div class="slide" data-notes="Simple, clean, 3-step reveal. Walk through each step and keep it light. 'Step 1: choose your plan based on your goals — weight loss, maintenance, muscle, or diabetic-friendly.' 'Step 2: we cook and deliver to you. Our chefs handle macro-balanced recipes you'd actually want to eat.' 'Step 3: you heat it and eat it. That's literally it.' PAUSE. 'No prep. No grocery shopping for every ingredient. No cleanup.' Invite a light laugh: 'If you can work a microwave, you can eat healthy.' Keep the tone fun and practical here — we're selling simplicity.">
+
+  <div class="eyebrow centered">Slide 13 of 15 · How MacroPlate Works</div>
+  <h2 class="centered">Three Steps to <span class="accent">Done-For-You</span> Nutrition</h2>
+  <div class="step-row" style="margin-top:28px;gap:12px;">
+    <div class="step" style="border-radius:16px;">
+      <div class="step-num">1</div>
+      <div style="font-size:40px;margin-bottom:12px;">📋</div>
+      <h3>Choose Your Plan</h3>
+      <p style="font-size:14px;margin-top:8px;">Weight loss · Maintenance · Muscle · Diabetic-friendly</p>
+    </div>
+    <div class="step" style="border-radius:16px;">
+      <div class="step-num">2</div>
+      <div style="font-size:40px;margin-bottom:12px;">👨‍🍳</div>
+      <h3>We Cook &amp; Deliver</h3>
+      <p style="font-size:14px;margin-top:8px;">Chef-prepared, macro-balanced meals delivered to your door</p>
+    </div>
+    <div class="step" style="border-radius:16px;">
+      <div class="step-num">3</div>
+      <div style="font-size:40px;margin-bottom:12px;">🔥</div>
+      <h3>Heat &amp; Eat</h3>
+      <p style="font-size:14px;margin-top:8px;">Ready in 2 minutes. No prep, no cleanup, no excuses.</p>
+    </div>
+  </div>
+  <div style="margin-top:28px;padding:18px 32px;background:#E8F5E9;border-radius:12px;text-align:center;">
+    <p style="font-size:17px;font-weight:700;color:var(--green-d);">If you can work a microwave, you can eat healthy. It really is that simple.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 15 — LOCAL TRUST
+════════════════════════════════════ -->
+<div class="slide" data-notes="Community connection is everything. This audience is your neighbors — speak to them that way. Name the city: 'We know West Valley. Busy families, long shifts, kids, extended families at the table.' EMOTION: 'I know what a Tuesday evening looks like here — and nobody's got two hours.' Reference local context: sports, multiple jobs, cultural food traditions. Make sure they feel SEEN. 'We didn't build MacroPlate for gym influencers. We built it for you — for real people with real lives, real schedules, and real goals.' Bilingual note: 'Our service is designed with bilingual families in mind. You can communicate with us in English or Spanish.'">
+
+  <div class="two-col">
+    <div>
+      <div class="section-badge">🏘️ Slide 14 of 15 · Local Trust</div>
+      <h2>Built for <span class="accent">West Valley</span></h2>
+      <p class="lead" style="margin-bottom:20px;">We know this community. We're part of it.</p>
+      <div class="community-grid" style="margin-top:0;">
+        <div class="community-card">
+          <div class="c-icon">👨‍👩‍👧‍👦</div>
+          <div>
+            <h3>Busy Families</h3>
+            <p style="font-size:13px;">Multiple jobs, school pickups, family meals — we fit your real schedule.</p>
+          </div>
+        </div>
+        <div class="community-card">
+          <div class="c-icon">🌎</div>
+          <div>
+            <h3>Bilingual Service</h3>
+            <p style="font-size:13px;">English &amp; Spanish support. Culturally relevant food options.</p>
+          </div>
+        </div>
+        <div class="community-card">
+          <div class="c-icon">💉</div>
+          <div>
+            <h3>Diabetes &amp; Weight Goals</h3>
+            <p style="font-size:13px;">Diabetic-friendly plans available. Designed with blood sugar in mind.</p>
+          </div>
+        </div>
+        <div class="community-card">
+          <div class="c-icon">🏥</div>
+          <div>
+            <h3>Vamos Health Partnership</h3>
+            <p style="font-size:13px;">Nutrition that complements your care — provider-aligned goals.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px;justify-content:center;">
+      <div style="background:linear-gradient(145deg,var(--green-d),var(--green-l));border-radius:20px;padding:36px;color:white;text-align:center;">
+        <div style="font-size:44px;margin-bottom:16px;">📍</div>
+        <p style="font-size:18px;font-weight:700;line-height:1.5;">West Valley City, Utah</p>
+        <p style="color:rgba(255,255,255,.8);font-size:15px;margin-top:10px;">Serving our neighbors with real food, real results, and real support — in the language you speak.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SLIDE 16 — CLOSING OFFER
+════════════════════════════════════ -->
+<div class="slide" data-notes="This is the closing offer — designed for 20–30% conversion. Do NOT rush. PAUSE before you reveal the offer. 'Tonight only' creates urgency that's real, not fake. Walk through each item slowly and explain the value: 'The sample meal box — that's worth $40. We're giving it to you for free because we believe once you taste the food, you'll understand.' PAUSE after tagline. 'Consistency beats motivation every time. Motivation fades. Systems stay.' Invite action clearly: 'I'm going to pass around a sheet — anyone interested in the seminar special, put your name and phone. No pressure, we'll reach out, ask a few questions, and if it's not the right fit we'll tell you.' Low friction. High trust.">
+
+  <div class="eyebrow centered">Slide 15 of 15 · Tonight's Offer</div>
+  <h2 class="centered">The <span class="accent">Seminar Special</span></h2>
+  <div class="offer-box">
+    <div class="offer-header">🎉 Tonight Only — Vamos Health Community Offer</div>
+    <div class="offer-body">
+      <div class="offer-item">
+        <div class="offer-check">✓</div>
+        <p>First week at 25% off your chosen meal plan<span>Weight loss, maintenance, diabetic-friendly, or muscle</span></p>
+      </div>
+      <div class="offer-item">
+        <div class="offer-check">✓</div>
+        <p>Free 30-min nutrition strategy call<span>Personalized macro targets, goal-setting, Q&amp;A</span></p>
+      </div>
+      <div class="offer-item">
+        <div class="offer-check">✓</div>
+        <p>Complimentary sample meal box<span>Try before you commit — we're that confident</span></p>
+      </div>
+      <div class="offer-item">
+        <div class="offer-check">✓</div>
+        <p>Access to MacroPlate nutrition guides<span>Bilingual macro cheat sheets, plate method printout</span></p>
+      </div>
+    </div>
+    <div class="offer-footer">
+      👉 Sign up tonight · macroplatemealprep.com · (866) 998-2667
+    </div>
+  </div>
+  <div class="cta-tagline" style="color:var(--green-d);font-style:italic;margin-top:20px;font-size:20px;">
+    "Consistency beats motivation — every time."
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     BONUS SLIDE A — SPANISH PLATE
+════════════════════════════════════ -->
+<div class="slide" data-notes="Si hay miembros hispanohablantes en la audiencia, presenta esta diapositiva en español. Di: 'Para nuestros amigos que prefieren el español — el método del plato funciona exactamente igual para la comida latina. Los frijoles, el arroz, las verduras, la carne — todo encaja perfectamente en este sistema.' Note to speaker: This slide signals respect for the community's culture and language. It dramatically increases trust with Spanish-speaking attendees and their families.">
+
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;justify-content:center;">
+      <div class="bilingual-header">
+        <span class="lang-badge es" style="font-size:14px;">🇲🇽 ESPAÑOL</span>
+        <span style="font-size:14px;font-weight:600;color:var(--gray);">Versión en Español</span>
+      </div>
+      <h2 style="margin-bottom:16px;">El Método del <span class="accent">Plato Saludable</span></h2>
+      <ul class="bullets">
+        <li>½ del plato — Verduras / Vegetales
+          <span>Brócoli, espinaca, nopales, chiles, calabaza</span>
+        </li>
+        <li>¼ del plato — Proteína
+          <span>Pollo, res magra, pescado, frijoles, huevos</span>
+        </li>
+        <li>¼ del plato — Carbohidratos complejos
+          <span>Arroz integral, tortilla de maíz, camote, frijoles</span>
+        </li>
+        <li>Agua — Tu bebida principal
+          <span>Evita jugos azucarados y refrescos</span>
+        </li>
+      </ul>
+      <div class="tip-box" style="margin-top:16px;">
+        🌮 La comida latina puede ser muy saludable — solo requiere balance.
+      </div>
+    </div>
+    <div class="plate-wrap" style="justify-content:center;">
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" style="width:260px;height:260px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.12));">
+        <circle cx="150" cy="150" r="145" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="3"/>
+        <path d="M150,150 L5,150 A145,145 0 0,1 295,150 Z" fill="#388E3C" opacity=".85"/>
+        <path d="M150,150 L295,150 A145,145 0 0,1 150,5 Z" fill="#D32F2F" opacity=".85"/>
+        <path d="M150,150 L150,5 A145,145 0 0,1 295,150 Z" fill="#F57F17" opacity=".85"/>
+        <line x1="150" y1="5" x2="150" y2="295" stroke="white" stroke-width="3"/>
+        <line x1="5" y1="150" x2="295" y2="150" stroke="white" stroke-width="3"/>
+        <text x="82" y="148" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="800" font-size="12" fill="white">½ VERDURAS</text>
+        <text x="228" y="108" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="800" font-size="11" fill="white">¼ PROTEÍNA</text>
+        <text x="228" y="208" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="800" font-size="11" fill="white">¼ CARBOS</text>
+        <circle cx="150" cy="150" r="145" fill="none" stroke="#BDBDBD" stroke-width="6"/>
+        <circle cx="150" cy="150" r="139" fill="none" stroke="white" stroke-width="3"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     BONUS SLIDE B — STORY SLIDE
+════════════════════════════════════ -->
+<div class="slide" data-notes="Tell this story slowly. Pause at the emotional beats. This is a composite based on a real client — you can adapt with your own. The goal is for every parent in the room to see themselves. EMOTION: 'This isn't an extraordinary story. This is a Tuesday in West Valley.' After telling it, pause and say quietly: 'Maria didn't need more willpower. She needed less friction.' Let the room sit with that for a few seconds before moving on.">
+
+  <div class="eyebrow centered">Bonus · Real Story</div>
+  <h2 class="centered">A <span class="accent">Tuesday</span> in West Valley</h2>
+  <div class="story-card" style="max-width:100%;margin-top:16px;">
+    <div class="quote-mark">"</div>
+    <blockquote>
+      Maria works two jobs. She's home by 6:30pm, two kids need dinner, and she's exhausted. She <em>knows</em> she should eat better. She's been told to lose weight by her doctor for three years. But by the time she gets home, the drive-through is easier than the grocery store.<br/><br/>
+      She started MacroPlate on a Monday. By Friday, her daughter said, <strong>"Mom, why is dinner better this week?"</strong><br/><br/>
+      Six weeks later, her A1C dropped by 0.4 points. Her doctor asked what she changed. She said: <em>"I just stopped having to think about it."</em>
+    </blockquote>
+    <div class="story-attr">— Composite story based on real client outcomes · West Valley, UT</div>
+  </div>
+  <div style="margin-top:20px;text-align:center;font-size:17px;font-weight:700;color:var(--green-d);">
+    She didn't need more willpower. She needed less friction.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     BONUS SLIDE C — FINAL CTA
+════════════════════════════════════ -->
+<div class="slide slide-cta" data-notes="This is your final close. Stand still. Make eye contact. Speak slowly. 'Before I let you go — three ways to take action tonight. No pressure, no hard sell. I just want to give you every option.' Walk through each button. 'If you're not ready for a plan — just try a sample. See if the food is something your family would actually eat.' PAUSE. 'If you want to talk it through — book a consult. We'll spend 30 minutes understanding your goals and build a starting point together.' 'And if you already know — sign up on the sheet. We'll take care of the rest.' Close: 'The system that got us here won't get us to where we want to go. Tonight, you have something different — a system that works in real life. The only question is: are you ready to stop winging it?' PAUSE. Thank the room and Vamos Health.">
+
+  <div class="eyebrow centered" style="color:rgba(255,255,255,.65);">Take Action Tonight</div>
+  <h2>"You don't need more motivation.<br/>You need a <span class="accent-y">system</span>."</h2>
+  <div class="cta-options">
+    <div class="cta-btn">
+      <div class="b-icon">🥗</div>
+      <h3>Try Sample Meals</h3>
+      <p>No commitment. Just taste the system before you decide.</p>
+    </div>
+    <div class="cta-btn primary">
+      <div class="b-icon">🚀</div>
+      <h3>Start Your Plan</h3>
+      <p>25% off tonight only · macroplatemealprep.com</p>
+    </div>
+    <div class="cta-btn">
+      <div class="b-icon">📞</div>
+      <h3>Book a Free Consult</h3>
+      <p>30 minutes · personalized for your goals</p>
+    </div>
+  </div>
+  <div class="cta-tagline">"Consistency beats motivation — every time."</div>
+  <p style="color:rgba(255,255,255,.55);font-size:13px;margin-top:20px;text-align:center;">
+    MacroPlate Meal Prep · macroplatemealprep.com<br/>
+    Vamos Health West Valley · 3725 W 4100 S Ste 107 · (385) 402-7500
+  </p>
+</div>
+
+</div><!-- /deck -->
+
+<!-- ─── UI CHROME ─────────────────────────────── -->
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+<div class="counter"><span class="cn" id="cn">1</span> / <span id="ct">18</span></div>
+<button class="nav-prev" id="prev" onclick="go(-1)" title="Previous (←)">‹</button>
+<button class="nav-next" id="next" onclick="go(1)" title="Next (→)">›</button>
+<button class="notes-toggle" id="notesBtn" onclick="toggleNotes()">N NOTES</button>
+<div class="notes-panel" id="notesPanel">
+  <div class="notes-inner">
+    <div class="notes-label">🎤 SPEAKER NOTES</div>
+    <p id="notesText"></p>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total  = slides.length;
+let cur = 0;
+let notesOpen = false;
+
+document.getElementById('ct').textContent = total;
+
+function render() {
+  slides.forEach((s, i) => {
+    s.classList.remove('active','fade-in');
+    if (i === cur) {
+      s.classList.add('active');
+      requestAnimationFrame(() => s.classList.add('fade-in'));
+    }
+  });
+  document.getElementById('progress').style.width = ((cur+1)/total*100) + '%';
+  document.getElementById('cn').textContent = cur + 1;
+  document.getElementById('prev').style.opacity = cur === 0 ? '.25' : '1';
+  document.getElementById('next').style.opacity = cur === total-1 ? '.25' : '1';
+  if (notesOpen) renderNotes();
+}
+
+function go(dir) {
+  const next = cur + dir;
+  if (next < 0 || next >= total) return;
+  cur = next;
+  render();
+}
+
+function renderNotes() {
+  const notes = slides[cur].dataset.notes || '';
+  document.getElementById('notesText').innerHTML = notes
+    .replace(/PAUSE/g, '<span class="pause">PAUSE</span>')
+    .replace(/EMOTION:/g, '<span class="emotion">EMOTION:</span>')
+    .replace(/LOGIC/g, '<span class="emotion">LOGIC</span>');
+}
+
+function toggleNotes() {
+  notesOpen = !notesOpen;
+  document.getElementById('notesPanel').classList.toggle('open', notesOpen);
+  document.getElementById('notesBtn').textContent = notesOpen ? 'N HIDE' : 'N NOTES';
+  if (notesOpen) renderNotes();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'PageUp')                    { e.preventDefault(); go(-1); }
+  if (e.key === 'n' || e.key === 'N') toggleNotes();
+  if (e.key === 'Home') { cur = 0; render(); }
+  if (e.key === 'End')  { cur = total-1; render(); }
+});
+
+// Touch swipe support
+let touchX = 0;
+document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; });
+document.addEventListener('touchend',   e => {
+  const dx = touchX - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 50) go(dx > 0 ? 1 : -1);
+});
+
+render();
+</script>
+</body>
+</html>
