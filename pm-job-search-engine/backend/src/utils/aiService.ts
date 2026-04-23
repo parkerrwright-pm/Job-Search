@@ -39,6 +39,7 @@ const hasAnthropicKey = (): boolean => Boolean(getAnthropicApiKey());
 const DEFAULT_OPENAI_MODEL = (process.env.OPENAI_MODEL || 'gpt-5.4').trim();
 const FALLBACK_MODELS = [
   (process.env.OPENAI_FALLBACK_MODEL || '').trim(),
+  'gpt-5.5',
   'gpt-5.4',
   'o3',
   'gpt-5.3-codex',

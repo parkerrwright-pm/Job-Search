@@ -638,6 +638,7 @@ export default function SettingsPage() {
                     onChange={handleChange}
                     className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
+                    <option value="gpt-5.5">GPT-5.5 (Premium)</option>
                     <option value="gpt-5.4-mini">GPT-5.4 Mini (Recommended)</option>
                     <option value="gpt-5.4">GPT-5.4 (Advanced)</option>
                   </select>

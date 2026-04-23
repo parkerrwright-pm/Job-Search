@@ -82,6 +82,7 @@ router.get(
           keyPresent: openAiKeyPresent,
           model: openAiModel,
           models: [
+            'gpt-5.5',
             'gpt-5.4',
             'gpt-5.4-mini',
             'gpt-5.3-codex',
@@ -112,6 +113,7 @@ router.put(
       'claude-3-haiku-20240307',
     ];
     const allowedOpenAIModels = [
+      'gpt-5.5',
       'gpt-5.4',
       'gpt-5.4-mini',
       'gpt-5.3-codex',
