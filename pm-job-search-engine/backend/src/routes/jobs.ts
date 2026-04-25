@@ -36,6 +36,22 @@ import {
 const router = Router();
 const prisma = new PrismaClient();
 
+const INTERVIEW_PREP_STAGES = ['PHONE_SCREEN', 'RECRUITER_SCREEN', 'HIRING_MANAGER', 'PANEL', 'FINAL'] as const;
+
+const normalizeInterviewPrepStage = (value: unknown): string | null => {
+  const candidate = String(value || '').trim().toUpperCase();
+  return INTERVIEW_PREP_STAGES.includes(candidate as (typeof INTERVIEW_PREP_STAGES)[number])
+    ? candidate
+    : null;
+};
+
+const extractInterviewPrepResourceValue = (resources: unknown, prefix: string): string => {
+  const match = Array.isArray(resources)
+    ? resources.find((entry) => String(entry || '').startsWith(prefix))
+    : null;
+  return match ? String(match).slice(prefix.length).trim() : '';
+};
+
 // Apply authentication to all routes
 router.use(authenticate);
 
@@ -206,7 +222,116 @@ router.get(
       },
     });
 
-    res.json(jobs);
+    const deckAnalyses = await prisma.aIAnalysis.findMany({
+      where: {
+        userId: req.userId!,
+        type: 'RESEARCH_DECK',
+        jobId: { in: jobs.map((job) => job.id) },
+      },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        jobId: true,
+        createdAt: true,
+        metrics: true,
+      },
+    });
+
+    const latestDeckByJobId = new Map<string, (typeof deckAnalyses)[number]>();
+    for (const analysis of deckAnalyses) {
+      if (!analysis.jobId) continue;
+      if (!latestDeckByJobId.has(analysis.jobId)) {
+        latestDeckByJobId.set(analysis.jobId, analysis);
+      }
+    }
+
+    const interviewPrepRecords = jobs.length
+      ? await prisma.interviewPrep.findMany({
+          where: {
+            userId: req.userId!,
+            OR: jobs.map((job) => ({
+              resources: {
+                has: `jobId:${job.id}`,
+              },
+            })),
+          },
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            createdAt: true,
+            resources: true,
+          },
+        })
+      : [];
+
+    const interviewPrepMetaByJobId = new Map<
+      string,
+      {
+        latestGeneratedAt: Date;
+        latestPrepId: string;
+        availableTypes: Set<string>;
+      }
+    >();
+
+    for (const record of interviewPrepRecords) {
+      const jobId = extractInterviewPrepResourceValue(record.resources, 'jobId:');
+      const interviewType = normalizeInterviewPrepStage(
+        extractInterviewPrepResourceValue(record.resources, 'interviewType:'),
+      );
+
+      if (!jobId) continue;
+
+      const existing = interviewPrepMetaByJobId.get(jobId);
+      if (!existing) {
+        interviewPrepMetaByJobId.set(jobId, {
+          latestGeneratedAt: record.createdAt,
+          latestPrepId: record.id,
+          availableTypes: new Set(interviewType ? [interviewType] : []),
+        });
+        continue;
+      }
+
+      if (interviewType) {
+        existing.availableTypes.add(interviewType);
+      }
+    }
+
+    res.json(
+      jobs.map((job) => {
+        const latestDeck = latestDeckByJobId.get(job.id);
+        const versionNumber = Number((latestDeck?.metrics as any)?.versionNumber || 0);
+        const interviewPrepMeta = interviewPrepMetaByJobId.get(job.id);
+        const availableInterviewPrepTypes = interviewPrepMeta
+          ? Array.from(interviewPrepMeta.availableTypes)
+          : [];
+        const currentInterviewPrepStage = normalizeInterviewPrepStage(job.stage);
+        const hasCurrentStagePrep = currentInterviewPrepStage
+          ? availableInterviewPrepTypes.includes(currentInterviewPrepStage)
+          : false;
+
+        return {
+          ...job,
+          hasResearchDeck: Boolean(latestDeck),
+          researchDeckMeta: latestDeck
+            ? {
+                latestGeneratedAt: latestDeck.createdAt,
+                latestVersionNumber: Number.isFinite(versionNumber) && versionNumber > 0 ? versionNumber : 1,
+                latestAnalysisId: latestDeck.id,
+              }
+            : null,
+          hasInterviewPrep: Boolean(interviewPrepMeta),
+          interviewPrepMeta: interviewPrepMeta
+            ? {
+                latestGeneratedAt: interviewPrepMeta.latestGeneratedAt,
+                latestPrepId: interviewPrepMeta.latestPrepId,
+                availableTypes: availableInterviewPrepTypes,
+                activeInterviewType: hasCurrentStagePrep ? currentInterviewPrepStage : null,
+                hasCurrentStagePrep,
+              }
+            : null,
+        };
+      }),
+    );
   })
 );
 

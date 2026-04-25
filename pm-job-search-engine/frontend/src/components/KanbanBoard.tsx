@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 interface KanbanBoardProps {
   jobs: any;
   onJobsUpdate: (jobs: any) => void;
+  onJobsRefresh?: () => Promise<void> | void;
   onViewDetails: (jobId: string) => void;
   onEdit: (job: any) => void;
   onDelete: (jobId: string) => void;
@@ -99,11 +100,13 @@ function DraggableJobCard({
   onViewDetails,
   onEdit,
   onDelete,
+  onJobsRefresh,
 }: {
   job: any;
   onViewDetails: (jobId: string) => void;
   onEdit: (job: any) => void;
   onDelete: (jobId: string) => void;
+  onJobsRefresh?: () => Promise<void> | void;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: job.id,
@@ -124,6 +127,7 @@ function DraggableJobCard({
         onViewDetails={onViewDetails}
         onEdit={onEdit}
         onDelete={onDelete}
+        onJobMetaRefresh={onJobsRefresh}
         isDragging={isDragging}
       />
     </div>
@@ -157,6 +161,7 @@ function DroppableColumn({
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   jobs,
   onJobsUpdate,
+  onJobsRefresh,
   onViewDetails,
   onEdit,
   onDelete,
@@ -259,6 +264,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         throw new Error('Failed to update stage');
       }
 
+      await onJobsRefresh?.();
+
       toast.success(
         `Moved to ${STAGE_LABELS[targetStage]?.replace(/^[^\w]*/, '') || targetStage}`
       );
@@ -328,6 +335,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           onViewDetails={onViewDetails}
                           onEdit={onEdit}
                           onDelete={onDelete}
+                          onJobsRefresh={onJobsRefresh}
                         />
                       ))
                     )}

@@ -279,18 +279,61 @@ Return as JSON with these keys: overview, businessModel, productStrategy, target
 Company: {company}
 Additional info: {info}`,
 
-  INTERVIEW_PREP: `You are an interview coach for product manager interviews. Generate a comprehensive interview preparation package:
-1. 15 behavioral questions (with suggested approaches)
-2. 10 product thinking questions
-3. 5 company/strategy specific questions (based on provided company)
-4. Mock interview tips specific to this company
-5. Story bank suggestions based on the resume
+  INTERVIEW_PREP: `You are an expert interview coach for product manager interviews. Generate stage-specific interview prep grounded in the candidate's actual background, the role requirements, and current company context.
 
-Return as JSON with keys: behavioralQuestions, productQuestions, companyQuestions, mockTips, storyBank.
+Interview type: {interviewType}
+
+Requirements:
+1. Tailor content to the interview type (PHONE_SCREEN, RECRUITER_SCREEN, HIRING_MANAGER, PANEL, FINAL).
+2. Ground every answer in the provided resume, candidate background, job description, company research, and accomplishment evidence. Do not write generic PM interview prep.
+3. Generate 8-12 focused question/answer pairs with practical sample answers.
+4. Keep a clear mix of behavioral, product, and company/strategy focus based on interview type.
+5. Include concise coaching notes for this stage.
+6. Include a short story bank grounded in the resume and accomplishment evidence.
+7. Highlight which evidence and company research the candidate should reference.
+8. BehavioralQuestions, ProductQuestions, and CompanyQuestions must each include 4 answered items.
+9. Keep each answer conversational and concise: plain language, short sentences, and no jargon-heavy phrasing.
+10. Each answered item must include STAR fields plus a short talk track.
+
+Return as JSON with keys: interviewType, overview, evidenceHighlights, researchHighlights, questionAnswerPairs, behavioralQuestions, productQuestions, companyQuestions, mockTips, storyBank.
+
+QuestionAnswerPairs format:
+- question
+- answerFramework
+- sampleAnswer
+- rationale
+- evidence
+
+BehavioralQuestions/ProductQuestions/CompanyQuestions item format:
+- question
+- star
+  - situation
+  - task
+  - action
+  - result
+- talkTrack
+
+STAR and talkTrack rules:
+- Keep star.situation, star.task, star.action, star.result each to 1-2 short sentences.
+- Keep talkTrack to 2-4 sentences and make it sound natural in spoken conversation.
+- Use specifics from provided resume, JD, company research, and accomplishment evidence.
+- Do not leave any STAR field blank.
+
+StoryBank item format:
+- title
+- situation
+- action
+- result
+- relevance
 
 Company: {company}
 Role: {role}
-Resume highlights: {resume}`,
+Company URL: {companyUrl}
+Context prompt: {contextPrompt}
+Resume highlights: {resume}
+Job description: {jd}
+Company research: {companyResearch}
+Accomplishment evidence: {accomplishmentEvidence}`,
 
   NETWORKING_MESSAGE: `You are an expert at writing professional networking messages. Generate personalized outreach messages:
 1. Short version (140 characters - for Slack/DM)
@@ -655,11 +698,23 @@ export class AIService {
     company: string,
     role: string,
     resumeHighlights: string,
+    interviewType: string = 'HIRING_MANAGER',
+    contextPrompt: string = '',
+    jobDescription: string = '',
+    companyUrl: string = '',
+    companyResearch: string = '',
+    accomplishmentEvidence: string = '',
   ) {
     const prompt = PROMPTS.INTERVIEW_PREP
       .replace('{company}', company)
       .replace('{role}', role)
-      .replace('{resume}', resumeHighlights);
+      .replace('{interviewType}', interviewType)
+      .replace('{contextPrompt}', contextPrompt || 'None')
+      .replace('{resume}', resumeHighlights)
+      .replace('{jd}', jobDescription || 'No job description provided')
+      .replace('{companyUrl}', companyUrl || 'Unknown')
+      .replace('{companyResearch}', companyResearch || 'No company research available')
+      .replace('{accomplishmentEvidence}', accomplishmentEvidence || 'No additional accomplishment evidence provided');
 
     const response = await this.callOpenAI(prompt);
     const content = (response.choices[0].message as any).content;

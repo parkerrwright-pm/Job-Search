@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "path": "PM_Job_Search_Engine"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.DS_Store": true
+    }
+  }
+}

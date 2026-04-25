@@ -302,7 +302,8 @@ export default function JobsPage() {
         <KanbanBoard
           jobs={jobs}
           onJobsUpdate={setJobs}
-          onViewDetails={(jobId) => console.log('View:', jobId)}
+          onJobsRefresh={fetchJobs}
+          onViewDetails={(jobId) => router.push(`/jobs/${jobId}/analyze`)}
           onEdit={(job) => {
             setEditingJob(job);
             setFormOpen(true);

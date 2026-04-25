@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import OpenAI from 'openai';
+import { readFile } from 'node:fs/promises';
 import { AuthRequest, asyncHandler, authenticate } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 import {
@@ -9,11 +10,33 @@ import {
   ResumeParsingService,
   PROMPTS_MAP,
 } from '../utils/aiService';
+import { appendAboutMeContext } from '../utils/aboutMeProfile';
+import { createResearchDeck } from '../agents/researchDeckAgent';
 
 const router = Router();
 const prisma = new PrismaClient();
 
 const CACHE_DURATION = 48 * 60 * 60 * 1000; // 48 hours
+
+const RESEARCH_DECK_TYPE = 'RESEARCH_DECK';
+const INTERVIEW_PREP_STAGES = ['PHONE_SCREEN', 'RECRUITER_SCREEN', 'HIRING_MANAGER', 'PANEL', 'FINAL'];
+
+const normalizeInterviewType = (value: any): string | null => {
+  const candidate = String(value || '').trim().toUpperCase();
+  return INTERVIEW_PREP_STAGES.includes(candidate) ? candidate : null;
+};
+
+const getVersionNumber = (metrics: any): number => {
+  const candidate = Number(metrics?.versionNumber || 0);
+  return Number.isFinite(candidate) && candidate > 0 ? candidate : 0;
+};
+
+const toVersionSummary = (analysis: any) => ({
+  id: analysis.id,
+  createdAt: analysis.createdAt,
+  versionNumber: getVersionNumber(analysis.metrics),
+  hasUserPrompt: Boolean((analysis.inputData as any)?.userPrompt),
+});
 
 const isQuotaExceededError = (error: any): boolean => {
   const status = error?.status;
@@ -86,6 +109,273 @@ const parseStoredResumeText = async (fileName: string, fileUrl: string): Promise
   }
 
   return '';
+};
+
+const LOCAL_EVIDENCE_FILES = [
+  '/Users/parkerwright/Desktop/ChatPRD-Export-2026-04-13T19-34-36.txt',
+  '/Users/parkerwright/Desktop/ChatPRD-Export-2026-04-13T20-07-06.txt',
+  '/Users/parkerwright/Desktop/ChatPRD-Stakeholder-Reviews-2026-04-13T20-07-26Z.txt',
+  '/Users/parkerwright/Desktop/ChatPRD-Stakeholder-Reviews-2026-04-13T20-07-41Z.txt',
+  '/Users/parkerwright/Desktop/ChatPRD-Export-2026-04-14T23-41-35.txt',
+];
+
+const normalizeText = (value: string): string => {
+  return String(value || '')
+    .replace(/\r\n/g, '\n')
+    .replace(/\u00a0/g, ' ')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+};
+
+const clampText = (value: string, maxLength: number): string => {
+  const normalized = normalizeText(value);
+  return normalized.length > maxLength ? `${normalized.slice(0, maxLength).trim()}…` : normalized;
+};
+
+const dedupeStrings = (values: string[]): string[] => {
+  return Array.from(new Set(values.map((value) => normalizeText(value)).filter(Boolean)));
+};
+
+const buildCompanyResearchText = async (company: string, companyUrl: string): Promise<string> => {
+  const snippets: string[] = [];
+
+  try {
+    const companyInfo = await WebSearchService.getCompanyInfo(company);
+    snippets.push(companyInfo?.answerBox?.snippet || '');
+    snippets.push(companyInfo?.knowledgeGraph?.description || '');
+
+    const organicResults = Array.isArray(companyInfo?.organic)
+      ? companyInfo.organic
+      : Array.isArray(companyInfo?.results)
+        ? companyInfo.results
+        : [];
+
+    organicResults.slice(0, 4).forEach((item: any) => {
+      snippets.push(item?.snippet || '');
+    });
+  } catch (error) {
+    console.warn('Company info research unavailable:', error);
+  }
+
+  try {
+    const newsQuery = companyUrl
+      ? `${company} ${companyUrl} latest company news product funding leadership`
+      : `${company} latest company news product funding leadership`;
+    const newsResults = await WebSearchService.searchSerper(newsQuery);
+    const organicNews = Array.isArray(newsResults?.organic)
+      ? newsResults.organic
+      : Array.isArray(newsResults?.news)
+        ? newsResults.news
+        : [];
+
+    organicNews.slice(0, 4).forEach((item: any) => {
+      const title = item?.title ? `${item.title}: ` : '';
+      snippets.push(`${title}${item?.snippet || ''}`);
+    });
+  } catch (error) {
+    console.warn('Company news research unavailable:', error);
+  }
+
+  return clampText(dedupeStrings(snippets).join('\n\n'), 2400);
+};
+
+const buildAccomplishmentEvidenceText = async (): Promise<string> => {
+  const keywordPattern = /(ichra|funding|subsidy|stakeholder review|acceptance criteria|release notice|approved|product manager|api|participant|qualification|alignment|launch|delivery)/i;
+  const paragraphs: string[] = [];
+
+  for (const filePath of LOCAL_EVIDENCE_FILES) {
+    try {
+      const raw = await readFile(filePath, 'utf8');
+      const chunks = normalizeText(raw).split(/\n\n+/g);
+      chunks.forEach((chunk) => {
+        if (chunk.length >= 60 && keywordPattern.test(chunk)) {
+          paragraphs.push(chunk);
+        }
+      });
+    } catch (error) {
+      console.warn(`Local evidence file unavailable: ${filePath}`, error);
+    }
+  }
+
+  return clampText(dedupeStrings(paragraphs).slice(0, 12).join('\n\n'), 3200);
+};
+
+const parseInterviewPrepNotes = (value: string | null | undefined): Record<string, any> => {
+  const notes = String(value || '').trim();
+  if (!notes.startsWith('{')) {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(notes);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+const DEFAULT_STAR_QUESTION_BANK = {
+  behavioral: [
+    'Tell me about a time you had to influence stakeholders without direct authority',
+    'Describe a situation where you had to pivot your product strategy based on new information',
+    'How do you handle competing priorities from different stakeholder groups?',
+    'Give me an example of how you have used data to challenge conventional thinking',
+  ],
+  product: [
+    "How would you prioritize API integrations for this platform?",
+    'What metrics would you track for a multi-sided benefits administration platform?',
+    'How would you approach technical debt in a fast-growing SaaS environment?',
+    'Describe your process for translating business requirements into technical specifications',
+  ],
+  company: [
+    'How would you leverage your benefits administration expertise in this role?',
+    'What opportunities do you see for automation in the broker-employer-employee ecosystem?',
+    'How does this multi-sided platform compare to your experience at WTW?',
+    'What would your 90-day plan look like for understanding API strategy?',
+  ],
+} as const;
+
+const simplifyConversational = (value: any, maxSentences: number = 2, maxLength: number = 280): string => {
+  const normalized = normalizeText(String(value || ''));
+  if (!normalized) return '';
+
+  const sentences = normalized
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+
+  const concise = (sentences.slice(0, maxSentences).join(' ') || normalized).trim();
+  return concise.length > maxLength ? `${concise.slice(0, maxLength).trim()}...` : concise;
+};
+
+const extractLegacyAnswerText = (item: any): string => {
+  if (!item || typeof item !== 'object') {
+    return '';
+  }
+
+  return simplifyConversational(
+    item.sampleAnswer || item.answerFramework || item.answer || item.result || item.relevance || item.talkTrack || '',
+    3,
+    420,
+  );
+};
+
+const inferPrepCategory = (questionText: string): 'behavioral' | 'product' | 'company' => {
+  const question = String(questionText || '').toLowerCase();
+
+  if (/(tell me about|time you|without direct authority|competing priorities|challenge conventional|stakeholder)/i.test(question)) {
+    return 'behavioral';
+  }
+
+  if (/(prioritize|metric|api|technical debt|requirements|specification|roadmap|tradeoff)/i.test(question)) {
+    return 'product';
+  }
+
+  return 'company';
+};
+
+const normalizeStar = (rawStar: any, fallbackAnswer: string) => {
+  const fallback = simplifyConversational(fallbackAnswer, 2, 260);
+
+  const situation = simplifyConversational(rawStar?.situation || rawStar?.context || '', 2, 220)
+    || 'A complex benefits workflow needed clearer execution and alignment.';
+  const task = simplifyConversational(rawStar?.task || rawStar?.goal || '', 2, 220)
+    || 'I needed to align stakeholders and deliver a reliable outcome quickly.';
+  const action = simplifyConversational(rawStar?.action || rawStar?.actions || fallback, 2, 280)
+    || 'I translated business needs into clear requirements, aligned partners, and drove delivery.';
+  const result = simplifyConversational(rawStar?.result || rawStar?.outcome || fallback, 2, 280)
+    || 'We improved user clarity, reduced manual work, and shipped with stronger confidence.';
+
+  return { situation, task, action, result };
+};
+
+const normalizeAnsweredItem = (
+  item: any,
+  index: number,
+  sectionLabel: 'behavioral' | 'product' | 'company',
+  questionAnswerPairs: any[],
+) => {
+  const question = simplifyConversational(
+    typeof item === 'string'
+      ? item
+      : item?.question || item?.prompt || item?.title || '',
+    1,
+    220,
+  ) || `${sectionLabel.toUpperCase()} question ${index + 1}`;
+
+  const pairMatch = questionAnswerPairs.find((pair) => {
+    const pairQuestion = String(pair?.question || pair?.prompt || '').toLowerCase();
+    const normalizedQuestion = String(question || '').toLowerCase();
+    return pairQuestion && (pairQuestion.includes(normalizedQuestion.slice(0, 24)) || normalizedQuestion.includes(pairQuestion.slice(0, 24)));
+  });
+
+  const legacyAnswer = extractLegacyAnswerText(item) || extractLegacyAnswerText(pairMatch);
+  const star = normalizeStar(item?.star, legacyAnswer);
+  const talkTrack = simplifyConversational(item?.talkTrack || legacyAnswer || `${star.action} ${star.result}`, 4, 420)
+    || `${star.action} ${star.result}`;
+
+  return {
+    question,
+    star,
+    talkTrack,
+  };
+};
+
+const buildFallbackAnsweredItems = (
+  sectionLabel: 'behavioral' | 'product' | 'company',
+  questionAnswerPairs: any[],
+  existingCount: number,
+): any[] => {
+  const categorizedPairs = questionAnswerPairs.filter((pair) => {
+    const pairQuestion = String(pair?.question || pair?.prompt || '');
+    return inferPrepCategory(pairQuestion) === sectionLabel;
+  });
+
+  const pairSource = categorizedPairs.length ? categorizedPairs : questionAnswerPairs;
+  const fallbackItems: any[] = [];
+
+  for (const pair of pairSource) {
+    if (existingCount + fallbackItems.length >= 4) break;
+    fallbackItems.push(normalizeAnsweredItem(pair, existingCount + fallbackItems.length, sectionLabel, questionAnswerPairs));
+  }
+
+  const defaultQuestions = DEFAULT_STAR_QUESTION_BANK[sectionLabel];
+  for (const defaultQuestion of defaultQuestions) {
+    if (existingCount + fallbackItems.length >= 4) break;
+
+    fallbackItems.push(
+      normalizeAnsweredItem(
+        {
+          question: defaultQuestion,
+          talkTrack:
+            'Use a concise example from your benefits platform work, then connect it directly to this role and the expected outcome.',
+        },
+        existingCount + fallbackItems.length,
+        sectionLabel,
+        questionAnswerPairs,
+      )
+    );
+  }
+
+  return fallbackItems;
+};
+
+const normalizeAnsweredSection = (
+  items: any,
+  sectionLabel: 'behavioral' | 'product' | 'company',
+  questionAnswerPairs: any[],
+): any[] => {
+  const rawItems = Array.isArray(items) ? items : [];
+  const normalizedItems = rawItems
+    .map((item, index) => normalizeAnsweredItem(item, index, sectionLabel, questionAnswerPairs))
+    .filter((item) => Boolean(item.question));
+
+  if (normalizedItems.length < 4) {
+    normalizedItems.push(...buildFallbackAnsweredItems(sectionLabel, questionAnswerPairs, normalizedItems.length));
+  }
+
+  return normalizedItems.slice(0, 6);
 };
 
 router.use(authenticate);
@@ -397,32 +687,229 @@ router.post(
 router.post(
   '/interview-prep',
   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { company, role, resumeHighlights } = req.body;
+    const { company, role, resumeHighlights, jobId, interviewType, contextPrompt } = req.body;
 
-    if (!company || !role) {
+    let resolvedCompany = String(company || '').trim();
+    let resolvedRole = String(role || '').trim();
+    let resolvedInterviewType = normalizeInterviewType(interviewType);
+    let jobDescription = '';
+    let companyUrl = '';
+
+    if (jobId) {
+      const job = await prisma.job.findUnique({ where: { id: jobId } });
+      if (!job || job.userId !== req.userId) {
+        throw new AppError(404, 'Job not found');
+      }
+
+      const stageType = normalizeInterviewType(job.stage);
+      if (!stageType) {
+        throw new AppError(
+          400,
+          'Interview prep is available only for PHONE_SCREEN, RECRUITER_SCREEN, HIRING_MANAGER, PANEL, or FINAL stages'
+        );
+      }
+
+      resolvedInterviewType = resolvedInterviewType || stageType;
+      resolvedCompany = resolvedCompany || String(job.company || '').trim();
+      resolvedRole = resolvedRole || String(job.title || '').trim();
+      jobDescription = String(job.jobDescriptionText || '').trim();
+
+      const customFields =
+        job.customFields && typeof job.customFields === 'object' && !Array.isArray(job.customFields)
+          ? (job.customFields as Record<string, any>)
+          : {};
+
+      companyUrl = String(customFields.companyUrl || job.jobUrl || '').trim();
+    }
+
+    if (!resolvedCompany || !resolvedRole) {
       throw new AppError(400, 'Company and role are required');
     }
 
+    if (!resolvedInterviewType) {
+      throw new AppError(400, 'interviewType must be one of PHONE_SCREEN, RECRUITER_SCREEN, HIRING_MANAGER, PANEL, FINAL');
+    }
+
+    let resolvedResumeHighlights = String(resumeHighlights || '').trim();
+    if (!resolvedResumeHighlights) {
+      const primaryResume = await prisma.resume.findFirst({
+        where: { userId: req.userId!, isPrimary: true },
+        orderBy: { updatedAt: 'desc' },
+      });
+
+      if (primaryResume?.fileUrl) {
+        resolvedResumeHighlights = await parseStoredResumeText(primaryResume.fileName, primaryResume.fileUrl);
+      }
+    }
+
+    resolvedResumeHighlights = await appendAboutMeContext(resolvedResumeHighlights);
+
+    const [companyResearch, accomplishmentEvidence] = await Promise.all([
+      buildCompanyResearchText(resolvedCompany, companyUrl),
+      buildAccomplishmentEvidenceText(),
+    ]);
+
     const result = await AIService.generateInterviewPrep(
-      company,
-      role,
-      resumeHighlights || ''
+      resolvedCompany,
+      resolvedRole,
+      resolvedResumeHighlights,
+      resolvedInterviewType,
+      String(contextPrompt || ''),
+      jobDescription,
+      companyUrl,
+      companyResearch,
+      accomplishmentEvidence,
     );
 
+    const questionAnswerPairs = Array.isArray(result?.questionAnswerPairs) ? result.questionAnswerPairs : [];
+    const normalizedBehavioralQuestions = normalizeAnsweredSection(result?.behavioralQuestions, 'behavioral', questionAnswerPairs);
+    const normalizedProductQuestions = normalizeAnsweredSection(result?.productQuestions, 'product', questionAnswerPairs);
+    const normalizedCompanyQuestions = normalizeAnsweredSection(result?.companyQuestions, 'company', questionAnswerPairs);
+
+    const normalizedResult = {
+      ...result,
+      interviewType: resolvedInterviewType,
+      overview: result?.overview ? String(result.overview) : '',
+      evidenceHighlights: Array.isArray(result?.evidenceHighlights)
+        ? result.evidenceHighlights.map((item: any) => String(item || '').trim()).filter(Boolean)
+        : [],
+      researchHighlights: Array.isArray(result?.researchHighlights)
+        ? result.researchHighlights.map((item: any) => String(item || '').trim()).filter(Boolean)
+        : [],
+      questionAnswerPairs,
+      behavioralQuestions: normalizedBehavioralQuestions,
+      productQuestions: normalizedProductQuestions,
+      companyQuestions: normalizedCompanyQuestions,
+      storyBank: Array.isArray(result?.storyBank) ? result.storyBank : [],
+      mockTips: result?.mockTips ? String(result.mockTips) : '',
+    };
+
+    const storedNotes = JSON.stringify({
+      interviewType: normalizedResult.interviewType,
+      overview: normalizedResult.overview,
+      evidenceHighlights: normalizedResult.evidenceHighlights,
+      researchHighlights: normalizedResult.researchHighlights,
+      behavioralQuestions: normalizedResult.behavioralQuestions,
+      productQuestions: normalizedResult.productQuestions,
+      companyQuestions: normalizedResult.companyQuestions,
+      mockTips: normalizedResult.mockTips,
+    });
+
+    const resources = [
+      ...(jobId ? [`jobId:${jobId}`] : []),
+      `interviewType:${resolvedInterviewType}`,
+    ];
+
     // Store prep materials
-    await prisma.interviewPrep.create({
+    const saved = await prisma.interviewPrep.create({
       data: {
         userId: req.userId!,
-        title: `${role} at ${company}`,
-        company,
-        questions: result.behavioralQuestions || [],
-        stories: result.storyBank || [],
-        productQuestions: result.productQuestions || [],
-        notes: result.mockTips || '',
+        title: `${resolvedRole} at ${resolvedCompany}`,
+        company: resolvedCompany,
+        questions: normalizedResult.questionAnswerPairs.length
+          ? normalizedResult.questionAnswerPairs
+          : normalizedResult.behavioralQuestions,
+        stories: normalizedResult.storyBank,
+        productQuestions: normalizedResult.productQuestions,
+        notes: storedNotes,
+        resources,
       },
     });
 
-    res.json(result);
+    res.json({
+      prep: normalizedResult,
+      prepMeta: {
+        id: saved.id,
+        createdAt: saved.createdAt,
+        interviewType: resolvedInterviewType,
+        jobId: jobId || null,
+      },
+    });
+  })
+);
+
+/**
+ * GET /api/ai/interview-prep/:jobId - Fetch latest interview prep for a job
+ */
+router.get(
+  '/interview-prep/:jobId',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { jobId } = req.params;
+    const job = await prisma.job.findUnique({ where: { id: jobId } });
+
+    if (!job || job.userId !== req.userId) {
+      throw new AppError(404, 'Job not found');
+    }
+
+    const prepRecords = await prisma.interviewPrep.findMany({
+      where: {
+        userId: req.userId!,
+        resources: {
+          has: `jobId:${jobId}`,
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+
+    const extractType = (record: any) => {
+      const typeTag = Array.isArray(record?.resources)
+        ? record.resources.find((entry: string) => String(entry).startsWith('interviewType:'))
+        : null;
+      const typeValue = typeTag ? String(typeTag).split(':')[1] : '';
+      return normalizeInterviewType(typeValue) || normalizeInterviewType(job.stage) || 'HIRING_MANAGER';
+    };
+
+    const toPrepPayload = (record: any) => {
+      const parsedNotes = parseInterviewPrepNotes(record?.notes);
+      const parsedQuestionAnswerPairs = Array.isArray(record?.questions) ? record.questions : [];
+      const parsedBehavioral = normalizeAnsweredSection(
+        Array.isArray(parsedNotes.behavioralQuestions) ? parsedNotes.behavioralQuestions : parsedQuestionAnswerPairs,
+        'behavioral',
+        parsedQuestionAnswerPairs,
+      );
+      const parsedProduct = normalizeAnsweredSection(
+        Array.isArray(parsedNotes.productQuestions) ? parsedNotes.productQuestions : record?.productQuestions,
+        'product',
+        parsedQuestionAnswerPairs,
+      );
+      const parsedCompany = normalizeAnsweredSection(
+        Array.isArray(parsedNotes.companyQuestions) ? parsedNotes.companyQuestions : [],
+        'company',
+        parsedQuestionAnswerPairs,
+      );
+
+      return {
+        interviewType: parsedNotes.interviewType || extractType(record),
+        overview: parsedNotes.overview ? String(parsedNotes.overview) : '',
+        evidenceHighlights: Array.isArray(parsedNotes.evidenceHighlights) ? parsedNotes.evidenceHighlights : [],
+        researchHighlights: Array.isArray(parsedNotes.researchHighlights) ? parsedNotes.researchHighlights : [],
+        questionAnswerPairs: parsedQuestionAnswerPairs,
+        behavioralQuestions: parsedBehavioral,
+        productQuestions: parsedProduct,
+        companyQuestions: parsedCompany,
+        storyBank: Array.isArray(record?.stories) ? record.stories : [],
+        mockTips: parsedNotes.mockTips ? String(parsedNotes.mockTips) : String(record?.notes || ''),
+      };
+    };
+
+    const currentStageType = normalizeInterviewType(job.stage);
+    const currentStagePrep = currentStageType
+      ? prepRecords.find((record) => extractType(record) === currentStageType)
+      : null;
+    const latest = currentStagePrep || prepRecords[0];
+
+    res.json({
+      jobId,
+      hasPrep: Boolean(latest),
+      hasCurrentStagePrep: Boolean(currentStagePrep),
+      prep: latest ? toPrepPayload(latest) : null,
+      versions: prepRecords.map((record) => ({
+        id: record.id,
+        createdAt: record.createdAt,
+        interviewType: extractType(record),
+      })),
+    });
   })
 );
 
@@ -538,6 +1025,125 @@ Target Industry: ${targetIndustry}`;
     const result = JSON.parse(content);
 
     res.json(result);
+  })
+);
+
+/**
+ * POST /api/ai/generate-research-deck - Generate or update CTO-ready research deck for a job
+ */
+router.post(
+  '/generate-research-deck',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { jobId, userPrompt, extensionTechData } = req.body;
+
+    if (!jobId) {
+      throw new AppError(400, 'jobId is required');
+    }
+
+    const normalizedPrompt = String(userPrompt || '').trim();
+    const normalizedExtensionData = String(extensionTechData || '').trim();
+    const hasUpdateInput = Boolean(normalizedPrompt || normalizedExtensionData);
+
+    const job = await prisma.job.findUnique({ where: { id: jobId } });
+    if (!job || job.userId !== req.userId) {
+      throw new AppError(404, 'Job not found');
+    }
+
+    if (job.stage !== 'HIRING_MANAGER') {
+      throw new AppError(400, 'Research deck generation is available only for HIRING_MANAGER stage jobs');
+    }
+
+    const latestDeck = await prisma.aIAnalysis.findFirst({
+      where: {
+        userId: req.userId!,
+        jobId,
+        type: RESEARCH_DECK_TYPE,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (latestDeck && !hasUpdateInput) {
+      return res.json({
+        deck: latestDeck.output,
+        fromCache: true,
+        updated: false,
+        jobId,
+        latestVersion: toVersionSummary(latestDeck),
+      });
+    }
+
+    const nextVersionNumber = getVersionNumber(latestDeck?.metrics) + 1 || 1;
+
+    const deck = await createResearchDeck({
+      job,
+      userPrompt: normalizedPrompt,
+      extensionTechData: normalizedExtensionData,
+      priorDeck: latestDeck?.output || null,
+    });
+
+    const saved = await prisma.aIAnalysis.create({
+      data: {
+        userId: req.userId!,
+        jobId,
+        type: RESEARCH_DECK_TYPE,
+        inputData: {
+          userPrompt: normalizedPrompt,
+          extensionTechData: normalizedExtensionData,
+          basedOnAnalysisId: latestDeck?.id || null,
+          updateRequested: hasUpdateInput,
+        },
+        output: deck,
+        metrics: {
+          versionNumber: nextVersionNumber,
+          updatedFromPrevious: Boolean(latestDeck),
+          generatedFromInput: hasUpdateInput,
+        },
+        expiresAt: new Date(Date.now() + CACHE_DURATION),
+      },
+    });
+
+    res.json({
+      deck,
+      fromCache: false,
+      updated: Boolean(latestDeck),
+      jobId,
+      latestVersion: toVersionSummary(saved),
+    });
+  })
+);
+
+/**
+ * GET /api/ai/research-deck/:jobId - Fetch latest research deck and version metadata
+ */
+router.get(
+  '/research-deck/:jobId',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { jobId } = req.params;
+    const job = await prisma.job.findUnique({ where: { id: jobId } });
+
+    if (!job || job.userId !== req.userId) {
+      throw new AppError(404, 'Job not found');
+    }
+
+    const analyses = await prisma.aIAnalysis.findMany({
+      where: {
+        userId: req.userId!,
+        jobId,
+        type: RESEARCH_DECK_TYPE,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+
+    const latest = analyses[0];
+
+    res.json({
+      deck: latest?.output || null,
+      hasDeck: Boolean(latest),
+      jobId,
+      latestVersion: latest ? toVersionSummary(latest) : null,
+      versions: analyses.map(toVersionSummary),
+    });
   })
 );
 
